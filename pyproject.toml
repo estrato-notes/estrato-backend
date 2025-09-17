@@ -1,0 +1,12 @@
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+# Seleciona as regras que o linter deve verificar.
+# "F": Pyflakes (erros)
+# "E", "W": pycodestyle (avisos de estilo)
+# "I": isort (organização de imports)
+# "UP": pyupgrade (sugestões de modernização)
+select = ["F", "E", "W", "I", "UP"]
+ignore = ["E501"]

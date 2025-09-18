@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
 from src.core.database import get_db
@@ -55,3 +55,13 @@ def update_folder_data_by_id(
 ):
     updated_folder = service.update_folder_data_by_id(db, folder_id, folder_data)
     return updated_folder
+
+
+@router.delete(
+    "/{folder_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Deletar Pasta por ID",
+)
+def delete_folder_by_id(folder_id: uuid.UUID, db: Session = Depends(get_db)):
+    service.delete_folder_by_id(db, folder_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -53,3 +53,8 @@ class FolderService:
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Uma pasta com esse nome já existema",
             )
+
+    @staticmethod
+    def delete_folder_by_id(db: Session, folder_id: uuid.UUID):
+        folder_to_delete = FolderService.get_folder_by_id(db, folder_id)
+        repository.delete_folder_by_id(db, folder_to_delete)

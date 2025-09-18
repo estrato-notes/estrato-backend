@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 
 from src.core.models import Folder
-from src.modules.folders.folder_schemas import FolderCreate
+
+from .schemas import FolderCreate
 
 
 class FolderRepository:

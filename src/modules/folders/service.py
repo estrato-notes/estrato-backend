@@ -32,7 +32,7 @@ class FolderService:
         folder = repository.get_folder_by_id(db, folder_id)
         if not folder:
             raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
+                status_code=status.HTTP_404_NOT_FOUND,
                 detail="A pasta não foi encontrada",
             )
         return folder

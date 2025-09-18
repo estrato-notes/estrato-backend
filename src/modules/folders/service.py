@@ -32,7 +32,7 @@ class FolderService:
         folder = repository.get_folder_by_id(db, folder_id)
         if not folder:
             raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
+                status_code=status.HTTP_404_NOT_FOUND,
                 detail="A pasta não foi encontrada",
             )
         return folder
@@ -53,3 +53,8 @@ class FolderService:
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Uma pasta com esse nome já existema",
             )
+
+    @staticmethod
+    def delete_folder_by_id(db: Session, folder_id: uuid.UUID):
+        folder_to_delete = FolderService.get_folder_by_id(db, folder_id)
+        repository.delete_folder_by_id(db, folder_to_delete)

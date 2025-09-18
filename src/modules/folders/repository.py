@@ -37,3 +37,8 @@ class FolderRepository:
         db.commit()
         db.refresh(folder)
         return folder
+
+    @staticmethod
+    def delete_folder_by_id(db: Session, folder: Folder):
+        db.delete(folder)
+        db.commit()

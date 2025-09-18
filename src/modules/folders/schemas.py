@@ -13,7 +13,7 @@ class FolderUpdate(BaseModel):
     name: Optional[str] = Field(  # noqa: UP045
         None, min_length=3, max_length=100, description="Novo nome da Pasta"
     )  # noqa: UP045
-    is_favorite: bool | None
+    is_favorite: Optional[bool] = None  # noqa: UP045
 
 
 class FolderResponse(BaseModel):

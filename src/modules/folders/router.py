@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from src.core.database import get_db
 
-from .schemas import FolderCreate, FolderResponse
+from .schemas import FolderCreate, FolderResponse, FolderUpdate
 from .service import FolderService as service
 
 router = APIRouter(prefix="/folders", tags=["Folders"])
@@ -42,3 +42,16 @@ def get_all_folders(db: Session = Depends(get_db)):
 def get_folder_by_id(folder_id: uuid.UUID, db: Session = Depends(get_db)):
     folder = service.get_folder_by_id(db, folder_id)
     return folder
+
+
+@router.patch(
+    "/{folder_id}",
+    response_model=FolderResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Editar informações de uma Pasta por ID",
+)
+def update_folder_data_by_id(
+    folder_id: uuid.UUID, folder_data: FolderUpdate, db: Session = Depends(get_db)
+):
+    updated_folder = service.update_folder_data_by_id(db, folder_id, folder_data)
+    return updated_folder

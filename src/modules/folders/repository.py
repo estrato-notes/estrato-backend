@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from src.core.models import Folder
 
-from .schemas import FolderCreate
+from .schemas import FolderCreate, FolderUpdate
 
 
 class FolderRepository:
@@ -25,3 +25,15 @@ class FolderRepository:
     @staticmethod
     def get_folder_by_id(db: Session, folder_id: uuid.UUID) -> Folder | None:
         return db.query(Folder).filter(Folder.id == folder_id).first()
+
+    @staticmethod
+    def update_folder(
+        db: Session, folder: Folder, folder_update_data: FolderUpdate
+    ) -> Folder:
+        updated_dictionary = folder_update_data.model_dump(exclude_unset=True)
+        for key, value in updated_dictionary.items():
+            setattr(folder, key, value)
+
+        db.commit()
+        db.refresh(folder)
+        return folder

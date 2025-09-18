@@ -34,14 +34,16 @@ services:
   api:
     build: .
     container_name: estrato_api
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
-      - ./app:/app
+      - .:/app
     ports:
       - "8000:8000"
     depends_on:
       db:
         condition: service_healthy 
+    env_file:
+      - .env
 
 volumes:
   db_data:

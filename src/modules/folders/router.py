@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
@@ -18,3 +20,25 @@ router = APIRouter(prefix="/folders", tags=["Folders"])
 def create_folder(folder_data: FolderCreate, db: Session = Depends(get_db)):
     new_folder = service.create_folder(db, folder_data)
     return new_folder
+
+
+@router.get(
+    "/",
+    response_model=list[FolderResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Lista para todas as Pastas",
+)
+def get_all_folders(db: Session = Depends(get_db)):
+    all_folders = service.get_all_folders(db)
+    return all_folders
+
+
+@router.get(
+    "/{folder_id}",
+    response_model=FolderResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Busca de Pasta por ID",
+)
+def get_folder_by_id(folder_id: uuid.UUID, db: Session = Depends(get_db)):
+    folder = service.get_folder_by_id(db, folder_id)
+    return folder

@@ -51,7 +51,7 @@ class FolderService:
             db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="Uma pasta com esse nome já existema",
+                detail="Uma pasta com esse nome já existe",
             )
 
     @staticmethod

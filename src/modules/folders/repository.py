@@ -10,7 +10,7 @@ from .schemas import FolderCreate, FolderUpdate
 class FolderRepository:
     @staticmethod
     def create_folder(db: Session, folder_data: FolderCreate):
-        new_folder = Folder(name=folder_data.name, is_favorite=folder_data.is_favorite)
+        new_folder = Folder(name=folder_data.name)
 
         db.add(new_folder)
         db.commit()

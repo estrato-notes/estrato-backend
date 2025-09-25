@@ -13,6 +13,7 @@ from .schemas import FolderCreate, FolderUpdate
 class FolderService:
     @staticmethod
     def create_folder(db: Session, folder_data: FolderCreate):
+        """Cria uma pasta nova e chama o repository para salvar no DB"""
         try:
             new_folder = repository.create_folder(db, folder_data)
             return new_folder
@@ -25,10 +26,12 @@ class FolderService:
 
     @staticmethod
     def get_all_folders(db: Session) -> list[Folder]:
+        """Retornar uma lista com todas as Pastas"""
         return repository.get_all_folders(db)
 
     @staticmethod
     def get_folder_by_id(db: Session, folder_id: uuid.UUID) -> Folder:
+        """Busca e retorna a pasta referente ao ID passado"""
         folder = repository.get_folder_by_id(db, folder_id)
         if not folder:
             raise HTTPException(
@@ -41,6 +44,7 @@ class FolderService:
     def update_folder_data_by_id(
         db: Session, folder_id: uuid.UUID, folder_update_data: FolderUpdate
     ) -> Folder:
+        """Faz alterações nos dados de uma pasta"""
         folder_to_update = FolderService.get_folder_by_id(db, folder_id)
         try:
             updated_folder = repository.update_folder(
@@ -56,5 +60,6 @@ class FolderService:
 
     @staticmethod
     def delete_folder_by_id(db: Session, folder_id: uuid.UUID):
+        """Deleta uma pasta existente"""
         folder_to_delete = FolderService.get_folder_by_id(db, folder_id)
         repository.delete_folder_by_id(db, folder_to_delete)

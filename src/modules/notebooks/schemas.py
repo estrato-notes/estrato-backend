@@ -5,18 +5,18 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-class FolderCreate(BaseModel):
+class NotebookCreate(BaseModel):
     name: str = Field(..., min_length=3, max_length=100, description="Nome da Pasta")
 
 
-class FolderUpdate(BaseModel):
+class NotebookUpdate(BaseModel):
     name: Optional[str] = Field(  # noqa: UP045
         None, min_length=3, max_length=100, description="Novo nome da Pasta"
     )  # noqa: UP045
     is_favorite: Optional[bool] = None  # noqa: UP045
 
 
-class FolderResponse(BaseModel):
+class NotebookResponse(BaseModel):
     id: uuid.UUID
     name: str
     is_favorite: bool

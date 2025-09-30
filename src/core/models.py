@@ -6,8 +6,8 @@ from sqlalchemy.dialects.postgresql import UUID
 from .database import Base
 
 
-class Folder(Base):
-    __tablename__ = "folders"
+class Notebook(Base):
+    __tablename__ = "notebooks"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(100), nullable=False, index=True, unique=True)

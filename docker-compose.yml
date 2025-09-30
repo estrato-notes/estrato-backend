@@ -31,5 +31,19 @@ services:
     env_file:
       - .env
 
+  tests:
+    build: .
+    container_name: estrato_tests
+    command: pytest
+    volumes: 
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+
 volumes:
   db_data:

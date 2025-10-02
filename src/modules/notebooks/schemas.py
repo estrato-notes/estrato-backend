@@ -10,10 +10,10 @@ class NotebookCreate(BaseModel):
 
 
 class NotebookUpdate(BaseModel):
-    name: Optional[str] = Field(  # noqa: UP045
+    name: Optional[str] = Field(
         None, min_length=3, max_length=100, description="Novo nome da Pasta"
-    )  # noqa: UP045
-    is_favorite: Optional[bool] = None  # noqa: UP045
+    )
+    is_favorite: Optional[bool] = None
 
 
 class NotebookResponse(BaseModel):

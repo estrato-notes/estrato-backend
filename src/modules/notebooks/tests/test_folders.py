@@ -8,6 +8,8 @@ client = TestClient(app)
 
 @pytest.mark.skip(reason="Testes de integração ainda não foram implementados")
 class TestNotebookRoutes:
+    """Agrupa todos os testes para as rotas do módulo Cadernos."""
+
     def test_create_notebook(self):
         """Testa a criação de um novo notebook (POST /notebooks/)."""
         pass

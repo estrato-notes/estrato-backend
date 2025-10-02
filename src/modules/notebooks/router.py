@@ -36,7 +36,7 @@ def get_all_notebooks(db: Session = Depends(get_db)):
 
 
 @router.get(
-    "/{folder_id}",
+    "/{notebook_id}",
     response_model=NotebookResponse,
     status_code=status.HTTP_200_OK,
     summary="Busca de Caderno por ID",
@@ -48,7 +48,7 @@ def get_notebook_by_id(notebook_id: uuid.UUID, db: Session = Depends(get_db)):
 
 
 @router.patch(
-    "/{folder_id}",
+    "/{notebook_id}",
     response_model=NotebookResponse,
     status_code=status.HTTP_200_OK,
     summary="Editar informações de um caderno por ID",
@@ -64,7 +64,7 @@ def update_notebook_data_by_id(
 
 
 @router.delete(
-    "/{folder_id}",
+    "/{notebook_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Deletar caderno por ID",
 )

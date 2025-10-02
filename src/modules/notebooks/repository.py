@@ -9,7 +9,7 @@ from .schemas import NotebookCreate, NotebookUpdate
 
 class NotebookRepository:
     @staticmethod
-    def create_notebook(db: Session, notebook_data: NotebookCreate):
+    def create_notebook(db: Session, notebook_data: NotebookCreate) -> Notebook:
         """Cria e adiciona um notebook no DB"""
         new_notebook = Notebook(name=notebook_data.name)
 

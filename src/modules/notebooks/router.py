@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.core.database import get_db
 
 from .schemas import NotebookCreate, NotebookResponse, NotebookUpdate
-from .service import NotebookService as service
+from .service import NotebookService as notebook_service
 
 router = APIRouter(prefix="/notebooks", tags=["Notebooks"])
 
@@ -19,7 +19,7 @@ router = APIRouter(prefix="/notebooks", tags=["Notebooks"])
 )
 def create_notebook(notebook_data: NotebookCreate, db: Session = Depends(get_db)):
     """Cria um novo notebook"""
-    new_notebook = service.create_notebook(db, notebook_data)
+    new_notebook = notebook_service.create_notebook(db, notebook_data)
     return new_notebook
 
 
@@ -31,7 +31,7 @@ def create_notebook(notebook_data: NotebookCreate, db: Session = Depends(get_db)
 )
 def get_all_notebooks(db: Session = Depends(get_db)):
     """Retorna uma lista com todos os cadernos"""
-    all_notebooks = service.get_all_notebooks(db)
+    all_notebooks = notebook_service.get_all_notebooks(db)
     return all_notebooks
 
 
@@ -43,7 +43,7 @@ def get_all_notebooks(db: Session = Depends(get_db)):
 )
 def get_notebook_by_id(notebook_id: uuid.UUID, db: Session = Depends(get_db)):
     """Busca e retorna um notebook de acordo com o ID passado"""
-    notebook = service.get_notebook_by_id(db, notebook_id)
+    notebook = notebook_service.get_notebook_by_id(db, notebook_id)
     return notebook
 
 
@@ -57,7 +57,7 @@ def update_notebook_data_by_id(
     notebook_id: uuid.UUID, notebook_data: NotebookUpdate, db: Session = Depends(get_db)
 ):
     """Edita as informações do notebook referente ao ID passado"""
-    updated_notebook = service.update_notebook_data_by_id(
+    updated_notebook = notebook_service.update_notebook_data_by_id(
         db, notebook_id, notebook_data
     )
     return updated_notebook
@@ -70,5 +70,5 @@ def update_notebook_data_by_id(
 )
 def delete_notebook_by_id(notebook_id: uuid.UUID, db: Session = Depends(get_db)):
     """Remove do Banco o notebook referente ao ID passado"""
-    service.delete_notebook_by_id(db, notebook_id)
+    notebook_service.delete_notebook_by_id(db, notebook_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

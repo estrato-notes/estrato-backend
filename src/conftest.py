@@ -27,8 +27,9 @@ def db_session():
     transaction = connection.begin()
     session = TestingSessionLocal(bind=connection)
     yield session
+    if transaction.is_active:
+        transaction.rollback()
     session.close()
-    transaction.rollback()
     connection.close()
 
 

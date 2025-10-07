@@ -36,7 +36,7 @@ class NotebookService:
         if not notebook:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="O caderno não foi encontrada",
+                detail="O caderno não foi encontrado",
             )
         return notebook
 

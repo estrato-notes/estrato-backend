@@ -9,6 +9,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
     healthcheck:
@@ -43,6 +44,7 @@ services:
     env_file:
       - .env
     environment:
+      - POSTGRES_DB=estrato_db_test
       - PYTHONPATH=/app
 
 volumes:

@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 
 from src.main import app
@@ -6,13 +5,16 @@ from src.main import app
 client = TestClient(app)
 
 
-@pytest.mark.skip(reason="Testes de integração ainda não foram implementados")
 class TestNotebookRoutes:
-    """Agrupa todos os testes para as rotas do módulo Cadernos."""
+    """Agrupa todos os testes de integração para as rotas do módulo Cadernos."""
 
-    def test_create_notebook(self):
+    def test_create_notebook(self, client: TestClient):
         """Testa a criação de um novo notebook (POST /notebooks/)."""
-        pass
+        response = client.post("/notebooks/", json={"name": "Caderno de Testes"})
+        data = response.json
+        assert response.status_code == 201
+        assert data["name"] == "Caderno de Testes"
+        assert "id" in data
 
     def test_get_all_notebooks(self):
         """Testa a listagem de todos os notebooks (GET /notebooks/)."""

@@ -46,3 +46,14 @@ def client(db_session):
     app.dependency_overrides[get_db] = override_get_db
     yield TestClient(app)
     del app.dependency_overrides[get_db]
+
+
+@pytest.fixture
+def created_notebook(client: TestClient) -> dict:
+    """
+    Fixture que cria um notebook via API e retorna os dados do notebook criado.
+    Útil para testes que dependem de um notebook já existente (ex: testes de notas).
+    """
+    response = client.post("/notebooks/", json={"name": "Caderno Teste para Notas"})
+    assert response.status_code == 201
+    return response.json()

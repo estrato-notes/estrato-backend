@@ -17,12 +17,12 @@ class NotebookService:
         try:
             new_notebook = notebook_repository.create_notebook(db, notebook_data)
             return new_notebook
-        except IntegrityError:
+        except IntegrityError as err:
             db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Um caderno com esse nome já existe",
-            )
+            ) from err
 
     @staticmethod
     def get_all_notebooks(db: Session) -> list[Notebook]:
@@ -52,12 +52,12 @@ class NotebookService:
                 db, notebook_to_update, notebook_update_data
             )
             return updated_notebook
-        except IntegrityError:
+        except IntegrityError as err:
             db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Um caderno com esse nome já existe",
-            )
+            ) from err
 
     @staticmethod
     def delete_notebook_by_id(db: Session, notebook_id: uuid.UUID):

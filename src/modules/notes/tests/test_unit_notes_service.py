@@ -23,7 +23,7 @@ def mock_notebook_service():
         "src.modules.notes.service.notebook_service", new_callable=MagicMock
     ) as mock:
         mock.get_notebook_by_id.return_value = Notebook(
-            id=uuid.uuid4, name="Mocked Notebook"
+            id=uuid.uuid4(), name="Mocked Notebook"
         )
         yield mock
 

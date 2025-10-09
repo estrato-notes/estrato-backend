@@ -1,10 +1,12 @@
+import alembic.command
+import alembic.config
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from src.core.config import settings
-from src.core.database import Base, get_db
+from src.core.database import get_db
 from src.main import app
 
 TEST_DATABASE_URL = settings.DATABASE_URL
@@ -15,9 +17,11 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 @pytest.fixture(scope="session", autouse=True)
 def setup_database():
     """Cria e limpa as tabelas do banco de testes para cada sessão"""
-    Base.metadata.create_all(bind=engine)
+    alembic_cfg = alembic.config.Config("alembic.ini")
+
+    alembic.command.upgrade(alembic_cfg, "head")
     yield
-    Base.metadata.drop_all(bind=engine)
+    alembic.command.downgrade(alembic_cfg, "base")
 
 
 @pytest.fixture

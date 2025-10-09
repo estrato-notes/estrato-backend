@@ -4,12 +4,12 @@ target-version = "py312"
 
 [tool.ruff.lint]
 # Seleciona as regras que o linter deve verificar.
-# "F": Pyflakes (erros de lógica, como variáveis não usadas)
-# "E": pycodestyle (erros de estilo, como indentação errada)
-# "W": pycodestyle (avisos de estilo, como linhas em branco extras)
-# "I": isort (organização automática dos imports)
-# A regra "UP" (pyupgrade), que era a mais agressiva, foi removida.
-select = ["F", "E", "W", "I"]
+# "F": Pyflakes (erros de lógica)
+# "E", "W": pycodestyle (erros e avisos de estilo)
+# "I": isort (organização de imports)
+# "B": bugbear (encontra prováveis bugs e más práticas de design)
+# "C90": mccabe (alerta sobre complexidade ciclomática alta)
+select = ["F", "E", "W", "I", "B", "C90"]
 
 # Ignora a regra de "linha muito longa", que já é controlada pelo "line-length".
 ignore = ["E501"]

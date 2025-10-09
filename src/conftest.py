@@ -56,8 +56,19 @@ def client(db_session):
 def created_notebook(client: TestClient) -> dict:
     """
     Fixture que cria um notebook via API e retorna os dados do notebook criado.
-    Útil para testes que dependem de um notebook já existente (ex: testes de notas).
     """
     response = client.post("/notebooks/", json={"name": "Caderno Teste para Notas"})
+    assert response.status_code == 201
+    return response.json()
+
+
+@pytest.fixture
+def created_note(client: TestClient, created_notebook: dict) -> dict:
+    """
+    Fixture que cria uma nota via API e retorna os dados da nota criado.
+    """
+    notebook_id = created_notebook["id"]
+    note_payload = {"title": "Titulo da nota inicial"}
+    response = client.post(f"/notebooks/{notebook_id}/notes/", json=note_payload)
     assert response.status_code == 201
     return response.json()

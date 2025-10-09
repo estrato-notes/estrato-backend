@@ -10,14 +10,6 @@ client = TestClient(app)
 class TestNoteRoutes:
     """Agrupa todos os testes para as rotas do módulo Notas."""
 
-    @pytest.fixture
-    def created_note(self, client: TestClient, created_notebook: dict) -> dict:
-        notebook_id = created_notebook["id"]
-        note_payload = {"title": "Titulo da nota inicial"}
-        response = client.post(f"/notebooks/{notebook_id}/notes/", json=note_payload)
-        assert response.status_code == 201
-        return response.json()
-
     # Testes pro POST (/notebooks/{notebook_id}/notes/)
     def test_create_note_for_existing_notebook_returns_201(
         self, client: TestClient, created_notebook: dict

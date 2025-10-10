@@ -30,7 +30,7 @@ def create_notebook(
     "/",
     response_model=list[NotebookResponse],
     status_code=status.HTTP_200_OK,
-    summary="Lista para todas os Cadernos",
+    summary="Lista para todos os Cadernos",
 )
 def get_all_notebooks(db: Annotated[Session, Depends(get_db)]):
     """Retorna uma lista com todos os cadernos"""

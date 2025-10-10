@@ -1,10 +1,17 @@
 import uuid
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Text, func
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Table, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from .database import Base
+
+note_tags = Table(
+    "note_tags",
+    Base.metadata,
+    Column("note_id", UUID(as_uuid=True), ForeignKey("notes.id"), primary_key=True),
+    Column("tag_id", UUID(as_uuid=True), ForeignKey("tags.id"), primary_key=True),
+)
 
 
 class Notebook(Base):
@@ -33,3 +40,13 @@ class Note(Base):
 
     notebook_id = Column(UUID(as_uuid=True), ForeignKey("notebooks.id"), nullable=False)
     notebook = relationship("Notebook", back_populates="notes")
+
+    tags = relationship("Tag", secondary=note_tags, back_populates="notes")
+
+
+class Tag(Base):
+    __tablename__ = "tags"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(String(20), nullable=False, unique=True, index=True)
+
+    notes = relationship("Note", secondary=note_tags, back_populates="tags")

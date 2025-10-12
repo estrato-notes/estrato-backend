@@ -111,5 +111,5 @@ def delete_tag_from_note(
     db: Annotated[Session, Depends(get_db)],
 ):
     """Remove uma tag da lista de tags da nota"""
-    note_service.delete_note_by_id(db, note_id, notebook_id, tag_id)
+    note_service.delete_tag_from_note(db, note_id, tag_id, notebook_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

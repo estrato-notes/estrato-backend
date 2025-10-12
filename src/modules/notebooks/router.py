@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
 from src.core.database import get_db
+from src.core.models import Notebook
 
 from .schemas import NotebookCreate, NotebookResponse, NotebookUpdate
 from .service import NotebookService as notebook_service
@@ -20,10 +21,9 @@ router = APIRouter(prefix="/notebooks", tags=["Notebooks"])
 )
 def create_notebook(
     notebook_data: NotebookCreate, db: Annotated[Session, Depends(get_db)]
-):
+) -> Notebook:
     """Cria um novo notebook"""
-    new_notebook = notebook_service.create_notebook(db, notebook_data)
-    return new_notebook
+    return notebook_service.create_notebook(db, notebook_data)
 
 
 @router.get(
@@ -32,10 +32,9 @@ def create_notebook(
     status_code=status.HTTP_200_OK,
     summary="Lista para todos os Cadernos",
 )
-def get_all_notebooks(db: Annotated[Session, Depends(get_db)]):
+def get_all_notebooks(db: Annotated[Session, Depends(get_db)]) -> list[Notebook]:
     """Retorna uma lista com todos os cadernos"""
-    all_notebooks = notebook_service.get_all_notebooks(db)
-    return all_notebooks
+    return notebook_service.get_all_notebooks(db)
 
 
 @router.get(
@@ -44,10 +43,11 @@ def get_all_notebooks(db: Annotated[Session, Depends(get_db)]):
     status_code=status.HTTP_200_OK,
     summary="Busca de Caderno por ID",
 )
-def get_notebook_by_id(notebook_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]):
+def get_notebook_by_id(
+    notebook_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]
+) -> Notebook:
     """Busca e retorna um notebook de acordo com o ID passado"""
-    notebook = notebook_service.get_notebook_by_id(db, notebook_id)
-    return notebook
+    return notebook_service.get_notebook_by_id(db, notebook_id)
 
 
 @router.patch(
@@ -60,12 +60,9 @@ def update_notebook_data_by_id(
     notebook_id: uuid.UUID,
     notebook_data: NotebookUpdate,
     db: Annotated[Session, Depends(get_db)],
-):
+) -> Notebook:
     """Edita as informações do notebook referente ao ID passado"""
-    updated_notebook = notebook_service.update_notebook_data_by_id(
-        db, notebook_id, notebook_data
-    )
-    return updated_notebook
+    return notebook_service.update_notebook_data_by_id(db, notebook_id, notebook_data)
 
 
 @router.delete(

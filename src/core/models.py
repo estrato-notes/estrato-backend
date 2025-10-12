@@ -46,7 +46,17 @@ class Note(Base):
 
 class Tag(Base):
     __tablename__ = "tags"
+
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(20), nullable=False, unique=True, index=True)
 
     notes = relationship("Note", secondary=note_tags, back_populates="tags")
+
+
+class Template(Base):
+    __tablename__ = "templates"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(String(200), index=True, unique=True, nullable=True)
+    content = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

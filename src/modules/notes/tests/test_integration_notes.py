@@ -133,3 +133,47 @@ class TestNoteRoutes:
 
         get_response = client.get(f"/notebooks/{notebook_id}/notes/{note_id}")
         assert get_response.status_code == 404
+
+    # Testes pro POST e DELETE (/notebooks/{notebook_id}/notes/{note_id}/tags/{tag_id})
+    def test_add_tag_to_note_returns_201(
+        self, client: TestClient, created_note: dict, created_notebook: dict
+    ):
+        """Testa a associação bem-sucedida de uma tag a uma nota."""
+        notebook_id = created_notebook["id"]
+        note_id = created_note["id"]
+
+        # Cria uma tag para associar
+        tag_response = client.post("/tags/", json={"name": "Tag Associada"})
+        assert tag_response.status_code == 201
+        tag_id = tag_response.json()["id"]
+
+        # Associa a tag à nota
+        response = client.post(
+            f"/notebooks/{notebook_id}/notes/{note_id}/tags/{tag_id}"
+        )
+        data = response.json()
+
+        assert response.status_code == 201
+        assert data["note_title"] == created_note["title"]
+        assert data["tag_name"] == "Tag Associada"
+
+    def test_remove_tag_from_note_returns_204(
+        self, client: TestClient, created_note: dict, created_notebook: dict
+    ):
+        """Testa a remoção bem-sucedida de uma tag de uma nota."""
+        notebook_id = created_notebook["id"]
+        note_id = created_note["id"]
+
+        # Cria e associa uma tag
+        tag_response = client.post("/tags/", json={"name": "Tag para Remover"})
+        tag_id = tag_response.json()["id"]
+        add_response = client.post(
+            f"/notebooks/{notebook_id}/notes/{note_id}/tags/{tag_id}"
+        )
+        assert add_response.status_code == 201
+
+        # Remove a associação
+        response = client.delete(
+            f"/notebooks/{notebook_id}/notes/{note_id}/tags/{tag_id}"
+        )
+        assert response.status_code == 204

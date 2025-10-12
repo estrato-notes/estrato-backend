@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from src.core.models import Note
 from src.modules.notebooks.service import NotebookService as notebook_service
+from src.modules.tags.service import TagService as tag_service
 
 from .repository import NoteRepository as note_repository
 from .schemas import NoteCreate, NoteUpdate
@@ -53,3 +54,20 @@ class NoteService:
         """Deleta uma nota existente"""
         note_to_delete = NoteService.get_note_by_id(db, note_id, notebook_id)
         note_repository.delete_note(db, note_to_delete)
+
+    @staticmethod
+    def add_tag_to_note(
+        db: Session, note_id: uuid.UUID, tag_id: uuid.UUID, notebook_id: uuid.UUID
+    ):
+        note = NoteService.get_note_by_id(db, note_id, notebook_id)
+        tag = tag_service.get_tag_by_id(db, tag_id)
+        note_repository.add_tag_to_note(db, note, tag)
+        return note, tag
+
+    @staticmethod
+    def delete_tag_from_note(
+        db: Session, note_id: uuid.UUID, tag_id: uuid.UUID, notebook_id: uuid.UUID
+    ):
+        note = NoteService.get_note_by_id(db, note_id, notebook_id)
+        tag = tag_service.get_tag_by_id(db, tag_id)
+        note_repository.delete_tag_from_note(db, note, tag)

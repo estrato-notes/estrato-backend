@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from src.core.database import get_db
 from src.core.models import Note
 
-from .schemas import NoteCreate, NoteResponse, NoteUpdate
+from .schemas import NoteCreate, NoteResponse, NoteTagResponse, NoteUpdate
 from .service import NoteService as note_service
 
 router = APIRouter(prefix="/notebooks/{notebook_id}/notes", tags=["Notes"])
@@ -79,4 +79,37 @@ def delete_note_by_id(
     note_id: uuid.UUID, notebook_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]
 ):
     note_service.delete_note_by_id(db, note_id, notebook_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post(
+    "/{note_id}/tags/{tag_id}",
+    status_code=status.HTTP_201_CREATED,
+    response_model=NoteTagResponse,
+    summary="Atribui uma tag a uma nota",
+)
+def add_tag_to_note(
+    note_id: uuid.UUID,
+    tag_id: uuid.UUID,
+    notebook_id: uuid.UUID,
+    db: Annotated[Session, Depends(get_db)],
+):
+    """Associa uma tag a lista de tags da nota"""
+    note, tag = note_service.add_tag_to_note(db, note_id, tag_id, notebook_id)
+    return {"note_title": note.title, "tag_name": tag.name}
+
+
+@router.delete(
+    "/{note_id}/tags/{tag_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Deleta uma tag de uma nota",
+)
+def delete_tag_from_note(
+    note_id: uuid.UUID,
+    tag_id: uuid.UUID,
+    notebook_id: uuid.UUID,
+    db: Annotated[Session, Depends(get_db)],
+):
+    """Remove uma tag da lista de tags da nota"""
+    note_service.delete_note_by_id(db, note_id, notebook_id, tag_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

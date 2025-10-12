@@ -2,7 +2,7 @@ import uuid
 
 from sqlalchemy.orm import Session
 
-from src.core.models import Note
+from src.core.models import Note, Tag
 
 from .schemas import NoteCreate, NoteUpdate
 
@@ -55,3 +55,17 @@ class NoteRepository:
         """Deleta uma Nota do Banco"""
         db.delete(note)
         db.commit()
+
+    @staticmethod
+    def add_tag_to_note(db: Session, note: Note, tag: Tag):
+        """Adiciona uma tag à lista de tags de uma nota"""
+        if tag not in note.tags:
+            note.tags.append(tag)
+            db.commit()
+
+    @staticmethod
+    def delete_tag_from_note(db: Session, note: Note, tag: Tag):
+        """Remove uma tag da lista de tags de uma nota"""
+        if tag in note.tags:
+            note.tags.remove(tag)
+            db.commit()

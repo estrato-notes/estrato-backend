@@ -17,6 +17,11 @@ class NoteUpdate(BaseModel):
     is_favorite: Optional[bool] = None
 
 
+class NoteTagResponse(BaseModel):
+    note_title: str
+    tag_name: str
+
+
 class NoteResponse(BaseModel):
     id: uuid.UUID
     title: str

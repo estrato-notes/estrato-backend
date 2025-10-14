@@ -11,7 +11,7 @@ class NoteRepository:
     @staticmethod
     def create_note(db: Session, note_data: NoteCreate, notebook_id: uuid.UUID) -> Note:
         """Cria e adiciona uma nova Nota no Banco"""
-        new_note = Note(title=note_data.title, notebook_id=notebook_id)
+        new_note = Note(**note_data.model_dump(), notebook_id=notebook_id)
 
         db.add(new_note)
         db.commit()

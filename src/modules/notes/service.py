@@ -3,12 +3,14 @@ import uuid
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from src.core.models import Note
+from src.core.models import Note, Template
 from src.modules.notebooks.service import NotebookService as notebook_service
 from src.modules.tags.service import TagService as tag_service
+from src.modules.templates.schemas import TemplateCreate, TemplateFromNoteCreate
+from src.modules.templates.service import TemplateService as template_service
 
 from .repository import NoteRepository as note_repository
-from .schemas import NoteCreate, NoteUpdate
+from .schemas import NoteCreate, NoteFromTemplateCreate, NoteUpdate
 
 
 class NoteService:
@@ -59,6 +61,7 @@ class NoteService:
     def add_tag_to_note(
         db: Session, note_id: uuid.UUID, tag_id: uuid.UUID, notebook_id: uuid.UUID
     ):
+        """Adiciona uma tag a uma nota"""
         note = NoteService.get_note_by_id(db, note_id, notebook_id)
         tag = tag_service.get_tag_by_id(db, tag_id)
         note_repository.add_tag_to_note(db, note, tag)
@@ -68,6 +71,37 @@ class NoteService:
     def delete_tag_from_note(
         db: Session, note_id: uuid.UUID, tag_id: uuid.UUID, notebook_id: uuid.UUID
     ):
+        """Remove uma tag associada a uma nota"""
         note = NoteService.get_note_by_id(db, note_id, notebook_id)
         tag = tag_service.get_tag_by_id(db, tag_id)
         note_repository.delete_tag_from_note(db, note, tag)
+
+    @staticmethod
+    def create_template_from_note(
+        db: Session,
+        note_id: uuid.UUID,
+        notebook_id: uuid.UUID,
+        template_data: TemplateFromNoteCreate,
+    ) -> Template:
+        """Cria um template com o conteúdo de uma nota existente"""
+        note_to_template = NoteService.get_note_by_id(db, note_id, notebook_id)
+
+        new_template = TemplateCreate(
+            name=template_data.name, content=note_to_template.content
+        )
+
+        return template_service.create_template(db, new_template)
+
+    @staticmethod
+    def create_note_from_template(
+        db: Session,
+        template_id: uuid.UUID,
+        notebook_id: uuid.UUID,
+        note_data: NoteFromTemplateCreate,
+    ) -> Note:
+        """Cria uma nova nota a partir de um template"""
+        template = template_service.get_template_by_id(db, template_id)
+
+        new_note = NoteCreate(title=note_data.title, content=template.content)
+
+        return NoteService.create_note(db, new_note, notebook_id)

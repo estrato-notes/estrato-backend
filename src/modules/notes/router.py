@@ -5,9 +5,16 @@ from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
 from src.core.database import get_db
-from src.core.models import Note
+from src.core.models import Note, Template
+from src.modules.templates.schemas import TemplateFromNoteCreate, TemplateResponse
 
-from .schemas import NoteCreate, NoteResponse, NoteTagResponse, NoteUpdate
+from .schemas import (
+    NoteCreate,
+    NoteFromTemplateCreate,
+    NoteResponse,
+    NoteTagResponse,
+    NoteUpdate,
+)
 from .service import NoteService as note_service
 
 router = APIRouter(prefix="/notebooks/{notebook_id}/notes", tags=["Notes"])
@@ -78,6 +85,7 @@ def update_note_data_by_id(
 def delete_note_by_id(
     note_id: uuid.UUID, notebook_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]
 ):
+    """Deleta uma nota referente ao ID passado"""
     note_service.delete_note_by_id(db, note_id, notebook_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
@@ -113,3 +121,39 @@ def delete_tag_from_note(
     """Remove uma tag da lista de tags da nota"""
     note_service.delete_tag_from_note(db, note_id, tag_id, notebook_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post(
+    "/{note_id}/templates",
+    response_model=TemplateResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Cria um template a partir de uma nota",
+)
+def create_template_from_note(
+    note_id: uuid.UUID,
+    notebook_id: uuid.UUID,
+    template_data: TemplateFromNoteCreate,
+    db: Annotated[Session, Depends(get_db)],
+) -> Template:
+    """Cria um template a partir de uma nota existente"""
+    return note_service.create_template_from_note(
+        db, note_id, notebook_id, template_data
+    )
+
+
+@router.post(
+    "/from-template/{template_id}",
+    response_model=NoteResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Cria uma nova nota a partir de um template",
+)
+def create_note_from_template(
+    template_id: uuid.UUID,
+    notebook_id: uuid.UUID,
+    note_data: NoteFromTemplateCreate,
+    db: Annotated[Session, Depends(get_db)],
+) -> Note:
+    """Cria uma nova nota a partir de um template"""
+    return note_service.create_note_from_template(
+        db, template_id, notebook_id, note_data
+    )

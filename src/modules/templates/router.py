@@ -28,7 +28,7 @@ def create_template(
 
 @router.get(
     "/",
-    response_model=TemplateResponse,
+    response_model=list[TemplateResponse],
     status_code=status.HTTP_200_OK,
     summary="Lista para todos os Templates",
 )

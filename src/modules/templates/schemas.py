@@ -17,6 +17,12 @@ class TemplateUpdate(BaseModel):
     content: Optional[str] = Field(None, description="Novo Conteúdo do Template")
 
 
+class TemplateFromNoteCreate(BaseModel):
+    name: str = Field(
+        ..., min_length=1, max_length=200, description="Nome para o novo template"
+    )
+
+
 class TemplateResponse(BaseModel):
     id: uuid.UUID
     name: str

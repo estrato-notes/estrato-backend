@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class NoteCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=200, description="Título da Nota")
+    content: Optional[str] = Field(None, description="Conteúdo inicial da Nota")
 
 
 class NoteUpdate(BaseModel):
@@ -20,6 +21,12 @@ class NoteUpdate(BaseModel):
 class NoteTagResponse(BaseModel):
     note_title: str
     tag_name: str
+
+
+class NoteFromTemplateCreate(BaseModel):
+    title: str = Field(
+        ..., min_length=1, max_length=200, description="Novo título para a Nota"
+    )
 
 
 class NoteResponse(BaseModel):

@@ -19,6 +19,7 @@ router = APIRouter(prefix="/tags", tags=["Tags"])
     summary="Cria uma nova Tag",
 )
 def create_tag(tag_data: TagCreate, db: Annotated[Session, Depends(get_db)]):
+    """Cria uma nova tag"""
     return tag_service.create_tag(db, tag_data)
 
 
@@ -29,6 +30,7 @@ def create_tag(tag_data: TagCreate, db: Annotated[Session, Depends(get_db)]):
     summary="Lista para todas as Tags",
 )
 def get_all_tags(db: Annotated[Session, Depends(get_db)]):
+    """Retorna uma lista com todas as tags"""
     return tag_service.get_all_tags(db)
 
 
@@ -39,6 +41,7 @@ def get_all_tags(db: Annotated[Session, Depends(get_db)]):
     summary="Busca Tag por ID",
 )
 def get_tag_by_id(tag_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]):
+    """Busca e retorna uma tag referente ao ID passado"""
     return tag_service.get_tag_by_id(db, tag_id)
 
 
@@ -53,6 +56,7 @@ def update_tag(
     tag_update_data: TagUpdate,
     db: Annotated[Session, Depends(get_db)],
 ):
+    """Atualiza as informações de uma tag"""
     return tag_service.update_tag(db, tag_id, tag_update_data)
 
 
@@ -60,5 +64,6 @@ def update_tag(
     "/{tag_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Deletar tag por ID"
 )
 def delete_tag(tag_id: uuid.UUID, db: Annotated[Session, Depends(get_db)]):
+    """Deleta uma tag do Banco"""
     tag_service.delete_tag(db, tag_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

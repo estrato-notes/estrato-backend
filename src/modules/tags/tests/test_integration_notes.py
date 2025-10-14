@@ -91,3 +91,40 @@ class TestTagRoutes:
 
         get_response = client.get(f"/tags/{tag_id}")
         assert get_response.status_code == 404
+
+    def test_create_template_from_note_returns_201(
+        self, client: TestClient, created_notebook: dict, created_note: dict
+    ):
+        """Testa a criação de um template a partir de uma nota."""
+        notebook_id = created_notebook["id"]
+        note_id = created_note["id"]
+        template_payload = {"name": "Template a partir da Nota"}
+
+        response = client.post(
+            f"/notebooks/{notebook_id}/notes/{note_id}/templates",
+            json=template_payload,
+        )
+        data = response.json()
+
+        assert response.status_code == 201
+        assert data["name"] == "Template a partir da Nota"
+        assert data["content"] == created_note["content"]
+
+    def test_create_note_from_template_returns_201(
+        self, client: TestClient, created_notebook: dict, created_template: dict
+    ):
+        """Testa a criação de uma nota a partir de um template."""
+        notebook_id = created_notebook["id"]
+        template_id = created_template["id"]
+        note_payload = {"title": "Nota criada a partir de Template"}
+
+        response = client.post(
+            f"/notebooks/{notebook_id}/notes/from-template/{template_id}",
+            json=note_payload,
+        )
+        data = response.json()
+
+        assert response.status_code == 201
+        assert data["title"] == "Nota criada a partir de Template"
+        assert data["content"] == created_template["content"]
+        assert data["notebook_id"] == notebook_id

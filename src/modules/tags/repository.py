@@ -9,6 +9,7 @@ from src.modules.tags.schemas import TagCreate, TagUpdate
 class TagRepository:
     @staticmethod
     def create_tag(db: Session, tag_data: TagCreate) -> Tag:
+        """Cria uma nova tag no Banco"""
         new_tag = Tag(name=tag_data.name)
 
         db.add(new_tag)
@@ -19,14 +20,17 @@ class TagRepository:
 
     @staticmethod
     def get_all_tags(db: Session) -> list[Tag]:
+        """Retorna uma lista com todas as tags"""
         return db.query(Tag).all()
 
     @staticmethod
     def get_tag_by_id(db: Session, tag_id: uuid.UUID) -> Tag | None:
+        """Busca e retorna uma tag com o id igual ao passado"""
         return db.query(Tag).filter(Tag.id == tag_id).first()
 
     @staticmethod
     def update_tag(db: Session, tag: Tag, tag_update_data: TagUpdate) -> Tag:
+        """Atualiza os dados de uma tag"""
         updated_data = tag_update_data.model_dump(exclude_unset=True)
 
         for key, value in updated_data.items():
@@ -38,5 +42,6 @@ class TagRepository:
 
     @staticmethod
     def delete_tag(db: Session, tag: Tag):
+        """Deleta uma tag do Banco"""
         db.delete(tag)
         db.commit()

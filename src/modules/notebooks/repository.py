@@ -43,7 +43,7 @@ class NotebookRepository:
         return notebook
 
     @staticmethod
-    def delete_notebook_by_id(db: Session, notebook: Notebook):
+    def delete_notebook(db: Session, notebook: Notebook):
         """Deleta o notebook do DB"""
         db.delete(notebook)
         db.commit()

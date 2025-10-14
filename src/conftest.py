@@ -72,3 +72,17 @@ def created_note(client: TestClient, created_notebook: dict) -> dict:
     response = client.post(f"/notebooks/{notebook_id}/notes/", json=note_payload)
     assert response.status_code == 201
     return response.json()
+
+
+@pytest.fixture
+def created_template(client: TestClient) -> dict:
+    """
+    Fixture que cria um template via API e retorna os dados do template criado.
+    """
+    template_payload = {
+        "name": "Template de Teste",
+        "content": "Conteúdo do template de teste.",
+    }
+    response = client.post("/templates/", json=template_payload)
+    assert response.status_code == 201
+    return response.json()

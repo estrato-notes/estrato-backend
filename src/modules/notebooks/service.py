@@ -26,7 +26,7 @@ class NotebookService:
 
     @staticmethod
     def get_all_notebooks(db: Session) -> list[Notebook]:
-        """Retornar uma lista com todos os notebooks"""
+        """Retorna uma lista com todos os notebooks"""
         return notebook_repository.get_all_notebooks(db)
 
     @staticmethod

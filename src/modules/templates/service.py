@@ -35,7 +35,7 @@ class TemplateService:
         if not template:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="A pasta não foi encontrada",
+                detail="O template não foi encontrado",
             )
         return template
 

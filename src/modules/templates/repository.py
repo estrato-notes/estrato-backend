@@ -44,7 +44,7 @@ class TemplateRepository:
         return template
 
     @staticmethod
-    def delete_template_by_id(db: Session, template: Template):
+    def delete_template(db: Session, template: Template):
         """Deleta um template do banco pelo ID"""
         db.delete(template)
         db.commit()

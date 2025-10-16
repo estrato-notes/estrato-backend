@@ -63,4 +63,4 @@ class NotebookService:
     def delete_notebook_by_id(db: Session, notebook_id: uuid.UUID):
         """Deleta um notebook existente"""
         notebook_to_delete = NotebookService.get_notebook_by_id(db, notebook_id)
-        notebook_repository.delete_notebook_by_id(db, notebook_to_delete)
+        notebook_repository.delete_notebook(db, notebook_to_delete)

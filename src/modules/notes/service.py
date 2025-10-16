@@ -48,6 +48,10 @@ class NoteService:
         note_update_data: NoteUpdate,
     ) -> Note:
         """Atualiza os dados de uma nota existente"""
+
+        if note_update_data.notebook_id:
+            notebook_service.get_notebook_by_id(db, note_update_data.notebook_id)
+
         note_to_update = NoteService.get_note_by_id(db, note_id, notebook_id)
         return note_repository.update_note(db, note_to_update, note_update_data)
 

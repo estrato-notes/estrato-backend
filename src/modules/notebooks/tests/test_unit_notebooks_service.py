@@ -149,6 +149,6 @@ class TestUnitNotebookService:
         mock_notebook_repo.get_notebook_by_id.assert_called_once_with(
             mock_db_session, notebook_id
         )
-        mock_notebook_repo.delete_notebook_by_id.assert_called_once_with(
+        mock_notebook_repo.delete_notebook.assert_called_once_with(
             mock_db_session, notebook_to_delete
         )

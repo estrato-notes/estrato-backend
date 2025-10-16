@@ -80,6 +80,6 @@ class TestUnitTemplateService:
         mock_template_repo.get_template_by_id.assert_called_once_with(
             mock_db_session, template_id
         )
-        mock_template_repo.delete_template_by_id.assert_called_once_with(
+        mock_template_repo.delete_template.assert_called_once_with(
             mock_db_session, template_to_delete
         )

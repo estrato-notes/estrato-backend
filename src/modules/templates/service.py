@@ -61,4 +61,4 @@ class TemplateService:
     def delete_template_by_id(db: Session, template_id: uuid.UUID):
         """Deleta um template existente"""
         template_to_delete = TemplateService.get_template_by_id(db, template_id)
-        template_repository.delete_template_by_id(db, template_to_delete)
+        template_repository.delete_template(db, template_to_delete)

@@ -15,6 +15,9 @@ class NoteUpdate(BaseModel):
         None, min_length=1, max_length=200, description="Novo título da Nota"
     )
     content: Optional[str] = Field(None, description="Novo conteúdo da Nota")
+    notebook_id: Optional[str] = Field(
+        None, description="ID do novo caderno para mover a nota"
+    )
     is_favorite: Optional[bool] = None
 
 

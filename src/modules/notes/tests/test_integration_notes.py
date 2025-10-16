@@ -177,3 +177,51 @@ class TestNoteRoutes:
             f"/notebooks/{notebook_id}/notes/{note_id}/tags/{tag_id}"
         )
         assert response.status_code == 204
+
+    def test_move_note_to_another_notebook(
+        self, client: TestClient, created_note: dict
+    ):
+        """
+        Testa se uma nota é movida com sucesso para um novo caderno.
+        A fixture 'created_note' provê a nota e o caderno de origem.
+        Um novo caderno de destino é criado manualmente para garantir a distinção.
+        """
+        # --- Cenário ---
+        # 1. Obter a nota e o caderno de origem a partir da fixture.
+        origin_notebook_id = created_note["notebook_id"]
+        note_id = created_note["id"]
+
+        # 2. Criar um caderno de DESTINO completamente novo e separado.
+        destination_notebook_response = client.post(
+            "/notebooks/", json={"name": "Caderno de Destino"}
+        )
+        assert destination_notebook_response.status_code == 201
+        destination_notebook_id = destination_notebook_response.json()["id"]
+
+        # Garante que os cadernos são, de fato, diferentes.
+        assert origin_notebook_id != destination_notebook_id
+
+        # --- Ação ---
+        # 3. Enviar a requisição para mover a nota para o caderno de destino.
+        update_payload = {"notebook_id": destination_notebook_id}
+        response = client.patch(
+            f"/notebooks/{origin_notebook_id}/notes/{note_id}", json=update_payload
+        )
+
+        # --- Verificação ---
+        # 4. A requisição de update foi bem-sucedida e retornou o novo notebook_id.
+        assert response.status_code == 200
+        assert response.json()["notebook_id"] == destination_notebook_id
+
+        # 5. A nota NÃO deve mais ser encontrada no endpoint do caderno de ORIGEM.
+        get_old_response = client.get(
+            f"/notebooks/{origin_notebook_id}/notes/{note_id}"
+        )
+        assert get_old_response.status_code == 404
+
+        # 6. A nota DEVE agora ser encontrada no endpoint do caderno de DESTINO.
+        get_new_response = client.get(
+            f"/notebooks/{destination_notebook_id}/notes/{note_id}"
+        )
+        assert get_new_response.status_code == 200
+        assert get_new_response.json()["id"] == note_id

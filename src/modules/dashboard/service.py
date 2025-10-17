@@ -7,6 +7,7 @@ from .schemas import DashboardResponse, TagPopularResponse
 class DashboardService:
     @staticmethod
     def get_dashboard_data(db: Session) -> DashboardResponse:
+        """Orquestra a busca de todos os dados necessários para o dashboard"""
         recent_notes = dashboard_repository.get_recent_notes(db)
         favorite_notes = dashboard_repository.get_favorite_notes(db)
         favorite_notebooks = dashboard_repository.get_favorite_notebooks(db)

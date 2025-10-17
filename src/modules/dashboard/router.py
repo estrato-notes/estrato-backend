@@ -18,4 +18,5 @@ router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
     summary="Lista as estatísticas do Dashboard",
 )
 def get_dashboard_data(db: Annotated[Session, Depends(get_db)]) -> DashboardResponse:
+    """Retorna as listas com as estatísticas que o dashboard trata"""
     return dashboard_service.get_dashboard_data(db)

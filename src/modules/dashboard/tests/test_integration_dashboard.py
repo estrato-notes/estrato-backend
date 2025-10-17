@@ -27,6 +27,12 @@ class TestDashboardRoutes:
             f"/notebooks/{created_note['notebook_id']}/notes/{created_note['id']}/tags/{tag_id}"
         )
 
+        # 3. Criar um template para testar os templates recentes
+        template_response = client.post(
+            "/templates/", json={"name": "Template Recente", "content": "Conteúdo"}
+        )
+        template_id = template_response.json()["id"]
+
         # --- Ação ---
         response = client.get("/dashboard/")
         data = response.json()
@@ -39,6 +45,7 @@ class TestDashboardRoutes:
         assert "popular_tags" in data
         assert "favorite_notes" in data
         assert "favorite_notebooks" in data
+        assert "recent_templates" in data  # <-- Nova verificação
 
         # Verifica se as listas não estão vazias e contêm os itens corretos
         assert len(data["recent_notes"]) > 0
@@ -53,3 +60,8 @@ class TestDashboardRoutes:
         assert len(data["popular_tags"]) > 0
         assert data["popular_tags"][0]["name"] == "Tag Popular"
         assert data["popular_tags"][0]["note_count"] == 1
+
+        # Verifica o conteúdo dos templates recentes
+        assert len(data["recent_templates"]) > 0
+        assert data["recent_templates"][0]["id"] == template_id
+        assert data["recent_templates"][0]["name"] == "Template Recente"

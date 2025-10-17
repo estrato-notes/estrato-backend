@@ -1,14 +1,19 @@
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from src.core.models import Note, Notebook, Tag, note_tags
+from src.core.models import Note, Notebook, Tag, Template, note_tags
 
 
 class DashboardRepository:
     @staticmethod
     def get_recent_notes(db: Session, limit: int = 5) -> list[Note]:
         """Busca as 5 notas mais recentemente atualizadas no banco de dados."""
-        return db.query(Note).order_by(Note.updated_at.desc()).limit(limit).all()
+        return (
+            db.query(Note)
+            .order_by(Note.updated_at.desc().nulls_last())
+            .limit(limit)
+            .all()
+        )
 
     @staticmethod
     def get_favorite_notes(db: Session, limit: int = 5) -> list[Note]:
@@ -27,7 +32,7 @@ class DashboardRepository:
         return (
             db.query(Notebook)
             .filter(Notebook.is_favorite)
-            .order_by(Notebook.updated_at.desc())
+            .order_by(Notebook.updated_at.desc().nulls_last())
             .limit(limit)
             .all()
         )
@@ -39,7 +44,17 @@ class DashboardRepository:
             db.query(Tag, func.count(note_tags.c.note_id))
             .join(note_tags, Tag.id == note_tags.c.tag_id)
             .group_by(Tag.id)
-            .order_by(func.count(note_tags.c.note_id).desc())
+            .order_by(func.count(note_tags.c.note_id).desc().nulls_last())
+            .limit(limit)
+            .all()
+        )
+
+    @staticmethod
+    def get_recent_templates(db: Session, limit: int = 5) -> list[Template]:
+        """Busca 5 templates mais recentes ordenados pela data de criação"""
+        return (
+            db.query(Template)
+            .order_by(Template.created_at.desc().nulls_last())
             .limit(limit)
             .all()
         )

@@ -1,10 +1,10 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.core.models import Note, Notebook, Tag
+from src.core.models import Note, Notebook, Tag, Template
 from src.modules.dashboard.service import DashboardService
 
 
@@ -29,7 +29,7 @@ class TestUnitDashboardService:
         # --- Cenário de Mock ---
         mock_db_session = MagicMock()
         notebook_id = uuid.uuid4()
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
 
         # Criando mocks com todos os campos necessários para a validação do Pydantic
         mock_recent_note = Note(
@@ -56,9 +56,13 @@ class TestUnitDashboardService:
             updated_at=now,
         )
         mock_tag = Tag(id=uuid.uuid4(), name="Tag Popular")
+        mock_recent_template = Template(
+            id=uuid.uuid4(), name="Template Recente", content="Conteúdo", created_at=now
+        )
 
         # Configura os retornos dos métodos mockados do repositório
         mock_dashboard_repo.get_recent_notes.return_value = [mock_recent_note]
+        mock_dashboard_repo.get_recent_templates.return_value = [mock_recent_template]
         mock_dashboard_repo.get_favorite_notes.return_value = [mock_fav_note]
         mock_dashboard_repo.get_favorite_notebooks.return_value = [mock_fav_notebook]
         mock_dashboard_repo.get_popular_tags.return_value = [(mock_tag, 1)]
@@ -69,6 +73,9 @@ class TestUnitDashboardService:
         # --- Verificação ---
         # Garante que todos os métodos do repositório foram chamados uma vez
         mock_dashboard_repo.get_recent_notes.assert_called_once_with(mock_db_session)
+        mock_dashboard_repo.get_recent_templates.assert_called_once_with(
+            mock_db_session
+        )
         mock_dashboard_repo.get_favorite_notes.assert_called_once_with(mock_db_session)
         mock_dashboard_repo.get_favorite_notebooks.assert_called_once_with(
             mock_db_session
@@ -78,6 +85,9 @@ class TestUnitDashboardService:
         # Verifica se os dados retornados estão corretos e bem formatados
         assert len(result.recent_notes) == 1
         assert result.recent_notes[0].title == "Nota Recente"
+
+        assert len(result.recent_templates) == 1
+        assert result.recent_templates[0].name == "Template Recente"
 
         assert len(result.favorite_notes) == 1
         assert result.favorite_notes[0].is_favorite is True

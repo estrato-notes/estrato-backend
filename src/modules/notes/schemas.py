@@ -25,11 +25,17 @@ class NoteTagResponse(BaseModel):
     note_title: str
     tag_name: str
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class NoteFromTemplateCreate(BaseModel):
     title: str = Field(
         ..., min_length=1, max_length=200, description="Novo título para a Nota"
     )
+
+
+class QuickNoteCreate(BaseModel):
+    content: str = Field(..., description="Conteúdo da nota rápida")
 
 
 class NoteResponse(BaseModel):

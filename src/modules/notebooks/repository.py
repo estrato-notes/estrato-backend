@@ -26,8 +26,13 @@ class NotebookRepository:
 
     @staticmethod
     def get_notebook_by_id(db: Session, notebook_id: uuid.UUID) -> Notebook | None:
-        """Busca e retorna uma pasta referente ao ID passado"""
+        """Busca e retorna um notebook referente ao ID passado"""
         return db.query(Notebook).filter(Notebook.id == notebook_id).first()
+
+    @staticmethod
+    def get_notebook_by_name(db: Session, notebook_name: str) -> Notebook | None:
+        """Busca e retorna um notebook com o nome passado pelo parâmetro da função"""
+        return db.query(Notebook).filter(Notebook.name == notebook_name).first()
 
     @staticmethod
     def update_notebook(

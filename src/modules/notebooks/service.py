@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from src.core.constants import QUICK_CAPTURE_NOTEBOOK_NAME
 from src.core.models import Notebook
 
 from .repository import NotebookRepository as notebook_repository
@@ -64,3 +65,18 @@ class NotebookService:
         """Deleta um notebook existente"""
         notebook_to_delete = NotebookService.get_notebook_by_id(db, notebook_id)
         notebook_repository.delete_notebook(db, notebook_to_delete)
+
+    @staticmethod
+    def get_or_create_quick_capture_notebook(db: Session) -> Notebook:
+        """Busca o caderno de captura rápida e, caso não exista, cria ele"""
+
+        quick_capture_notebook = notebook_repository.get_notebook_by_name(
+            db, QUICK_CAPTURE_NOTEBOOK_NAME
+        )
+
+        if quick_capture_notebook:
+            return quick_capture_notebook
+        else:
+            return notebook_repository.create_notebook(
+                db, NotebookCreate(name=QUICK_CAPTURE_NOTEBOOK_NAME)
+            )

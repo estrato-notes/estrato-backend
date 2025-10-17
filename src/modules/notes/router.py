@@ -14,6 +14,7 @@ from .schemas import (
     NoteResponse,
     NoteTagResponse,
     NoteUpdate,
+    QuickNoteCreate,
 )
 from .service import NoteService as note_service
 
@@ -157,3 +158,16 @@ def create_note_from_template(
     return note_service.create_note_from_template(
         db, template_id, notebook_id, note_data
     )
+
+
+@router.post(
+    "/quick-capture",
+    response_model=NoteResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Cria uma nova nota rápida",
+)
+def create_quick_note(
+    quick_note_data: QuickNoteCreate, db: Annotated[Session, Depends(get_db)]
+):
+    """Cria uma nota de captura rápida"""
+    return note_service.create_quick_note(db, quick_note_data)

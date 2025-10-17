@@ -10,7 +10,7 @@ from src.modules.templates.schemas import TemplateCreate, TemplateFromNoteCreate
 from src.modules.templates.service import TemplateService as template_service
 
 from .repository import NoteRepository as note_repository
-from .schemas import NoteCreate, NoteFromTemplateCreate, NoteUpdate
+from .schemas import NoteCreate, NoteFromTemplateCreate, NoteUpdate, QuickNoteCreate
 
 
 class NoteService:
@@ -109,3 +109,22 @@ class NoteService:
         new_note = NoteCreate(title=note_data.title, content=template.content)
 
         return NoteService.create_note(db, new_note, notebook_id)
+
+    @staticmethod
+    def create_quick_note(db: Session, quick_note_data: QuickNoteCreate) -> Note:
+        """Cria uma nota de captura rápida"""
+        standard_notebook = notebook_service.get_or_create_quick_capture_notebook(db)
+
+        content = quick_note_data.content
+        title: str
+
+        if len(content) > 30:
+            title = content[:30] + "..."
+        else:
+            title = content
+
+        return NoteService.create_note(
+            db,
+            NoteCreate(title=title, content=content),
+            standard_notebook.id,
+        )

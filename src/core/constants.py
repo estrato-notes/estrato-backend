@@ -1,0 +1,1 @@
+QUICK_CAPTURE_NOTEBOOK_NAME = "Capturas Rápidas"

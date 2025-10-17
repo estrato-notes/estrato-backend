@@ -18,3 +18,5 @@ class DashboardResponse(BaseModel):
     favorite_notes: list[NoteResponse]
     recent_templates: list[TemplateResponse]
     favorite_notebooks: list[NotebookResponse]
+
+    model_config = ConfigDict(from_attributes=True)

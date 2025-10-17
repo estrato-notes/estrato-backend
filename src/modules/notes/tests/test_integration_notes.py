@@ -2,6 +2,8 @@ import pytest  # noqa
 import uuid
 from fastapi.testclient import TestClient
 
+from src.core.constants import QUICK_CAPTURE_NOTEBOOK_NAME
+
 from src.main import app
 
 client = TestClient(app)
@@ -225,3 +227,48 @@ class TestNoteRoutes:
         )
         assert get_new_response.status_code == 200
         assert get_new_response.json()["id"] == note_id
+
+    @pytest.mark.parametrize(
+        "content, expected_title",
+        [
+            ("Nota rápida com título curto.", "Nota rápida com título curto."),
+            (
+                "Este é um conteúdo muito longo para uma nota de captura rápida e deve ser truncado.",
+                "Este é um conteúdo muito longo...",
+            ),
+        ],
+    )
+    def test_create_quick_note_returns_201(
+        self,
+        client: TestClient,
+        created_notebook: dict,
+        content: str,
+        expected_title: str,
+    ):
+        """
+        Testa a criação de uma nota de captura rápida.
+        Verifica se a nota é criada no caderno correto ('Capturas Rápidas')
+        e se o título é gerado corretamente.
+        """
+        # --- Cenário ---
+        # A `created_notebook` fixture é usada aqui apenas para fornecer um UUID
+        # válido para a URL, embora a lógica de quick_capture o ignore.
+        notebook_id = created_notebook["id"]
+        quick_note_payload = {"content": content}
+
+        # --- Ação ---
+        response = client.post(
+            f"/notebooks/{notebook_id}/notes/quick-capture", json=quick_note_payload
+        )
+        data = response.json()
+
+        # --- Verificação ---
+        assert response.status_code == 201
+        assert data["content"] == content
+        assert data["title"] == expected_title
+
+        # Verifica se a nota foi realmente criada no caderno "Capturas Rápidas"
+        quick_capture_notebook_id = data["notebook_id"]
+        notebook_response = client.get(f"/notebooks/{quick_capture_notebook_id}")
+        assert notebook_response.status_code == 200
+        assert notebook_response.json()["name"] == QUICK_CAPTURE_NOTEBOOK_NAME

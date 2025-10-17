@@ -4,8 +4,9 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi import HTTPException
 
+from src.core.constants import QUICK_CAPTURE_NOTEBOOK_NAME
 from src.core.models import Note, Notebook
-from src.modules.notes.schemas import NoteCreate, NoteUpdate
+from src.modules.notes.schemas import NoteCreate, NoteUpdate, QuickNoteCreate
 from src.modules.notes.service import NoteService
 
 
@@ -174,3 +175,64 @@ class TestUnitNoteService:
         mock_note_repo.delete_note.assert_called_once_with(
             mock_db_session, note_to_delete
         )
+
+    @pytest.mark.parametrize(
+        "content, expected_title",
+        [
+            ("Conteúdo curto", "Conteúdo curto"),
+            (
+                "Este conteúdo é deliberadamente muito longo para testar a lógica de truncagem do título.",
+                "Este conteúdo é deliberadament...",
+            ),
+        ],
+    )
+    def test_create_quick_note(
+        self,
+        mock_note_repo: MagicMock,
+        mock_notebook_service: MagicMock,
+        content: str,
+        expected_title: str,
+    ):
+        """
+        Testa a lógica de criação de uma nota rápida, garantindo que o caderno
+        de captura rápida é buscado e que o título é gerado corretamente.
+        """
+        # --- Cenário ---
+        mock_db_session = MagicMock()
+        quick_note_data = QuickNoteCreate(content=content)
+        mock_quick_capture_notebook = Notebook(
+            id=uuid.uuid4(), name=QUICK_CAPTURE_NOTEBOOK_NAME
+        )
+
+        # Configura os mocks
+        mock_notebook_service.get_or_create_quick_capture_notebook.return_value = (
+            mock_quick_capture_notebook
+        )
+        # O NoteService.create_note será chamado internamente, então mockamos o retorno do repositório
+        mock_note_repo.create_note.return_value = Note(
+            id=uuid.uuid4(),
+            title=expected_title,
+            content=content,
+            notebook_id=mock_quick_capture_notebook.id,
+        )
+
+        # --- Ação ---
+        result = NoteService.create_quick_note(mock_db_session, quick_note_data)
+
+        # --- Verificação ---
+        # 1. Verifica se o serviço de cadernos foi chamado para obter o caderno de "Capturas Rápidas"
+        mock_notebook_service.get_or_create_quick_capture_notebook.assert_called_once_with(
+            mock_db_session
+        )
+
+        # 2. Verifica se o repositório de notas foi chamado para criar a nota com os dados corretos
+        # (título gerado e ID do caderno de captura rápida)
+        assert len(mock_note_repo.create_note.call_args_list) == 1
+        call_args = mock_note_repo.create_note.call_args[0]
+        assert call_args[1].title == expected_title
+        assert call_args[1].content == content
+        assert call_args[2] == mock_quick_capture_notebook.id
+
+        # 3. Verifica o resultado final
+        assert result.title == expected_title
+        assert result.notebook_id == mock_quick_capture_notebook.id

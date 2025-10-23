@@ -10,6 +10,11 @@ jobs:
     build_and_test:
         runs-on: ubuntu-latest
 
+        env:
+            POSTGRES_USER: testuser
+            POSTGRES_PASSWORD: testpass
+            POSTGRES_DB: estrato_db_ci
+
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -31,8 +36,6 @@ jobs:
             - name: Run tests with docker compose
               run: |
                 docker compose -f docker-compose.yml run --rm \
-                -e POSTGRES_USER=testuser \
-                -e POSTGRES_PASSWORD=testpass \
                 -e POSTGRES_DB=estrato_db_test \
                 -e SECRET_KEY=testsecretkey123 \
                 -e ALGORITHM=HS256 \

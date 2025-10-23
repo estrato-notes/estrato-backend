@@ -43,8 +43,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    env_file:
-      - .env
     environment:
       - POSTGRES_DB=estrato_db_test
       - PYTHONPATH=/app

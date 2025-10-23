@@ -29,11 +29,12 @@ jobs:
                 ruff check .
             
             - name: Run tests with docker compose
-              env:
-                POSTGRES_USER: testuser
-                POSTGRES_PASSWORD: testpass
-                POSTGRES_DB: estrato_db_test
-                SECRET_KEY: testsecretkey123
-                ALGORITHM: HS256
-                ACCESS_TOKEN_EXPIRE_MINUTES: 15
-              run: docker compose -f docker-compose.yml run --rm tests
+              run: |
+                docker compose -f docker-compose.yml run --rm \
+                -e POSTGRES_USER=testuser \
+                -e POSTGRES_PASSWORD=testpass \
+                -e POSTGRES_DB=estrato_db_test \
+                -e SECRET_KEY=testsecretkey123 \
+                -e ALGORITHM=HS256 \
+                -e ACCESS_TOKEN_EXPIRE_MINUTES=15 \
+                tests

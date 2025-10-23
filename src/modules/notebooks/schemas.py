@@ -2,27 +2,25 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class FolderCreate(BaseModel):
+class NotebookCreate(BaseModel):
     name: str = Field(..., min_length=3, max_length=100, description="Nome da Pasta")
-    is_favorite: bool = False
 
 
-class FolderUpdate(BaseModel):
-    name: Optional[str] = Field(  # noqa: UP045
+class NotebookUpdate(BaseModel):
+    name: Optional[str] = Field(
         None, min_length=3, max_length=100, description="Novo nome da Pasta"
-    )  # noqa: UP045
-    is_favorite: bool | None
+    )
+    is_favorite: Optional[bool] = None
 
 
-class FolderResponse(BaseModel):
+class NotebookResponse(BaseModel):
     id: uuid.UUID
     name: str
     is_favorite: bool
     created_at: datetime
     updated_at: datetime | None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

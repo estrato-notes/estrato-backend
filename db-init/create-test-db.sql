@@ -1,0 +1,1 @@
+CREATE DATABASE estrato_db_test;

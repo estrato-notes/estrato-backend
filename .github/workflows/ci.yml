@@ -14,6 +14,9 @@ jobs:
             POSTGRES_USER: testuser
             POSTGRES_PASSWORD: testpass
             POSTGRES_DB: estrato_db_ci
+            SECRET_KEY: testsecretkey123
+            ALGORITHM: HS256
+            ACCESS_TOKEN_EXPIRE_MINUTES: 15
 
         steps:
             - name: Checkout code
@@ -23,21 +26,15 @@ jobs:
               uses: actions/setup-python@v5
               with:
                 python-version: '3.12'
-            
+
             - name: Install Dependencies
               run: |
                 python -m pip install --upgrade pip
                 pip install -r requirements.txt
-            
+
             - name: Lint with Ruff
               run: |
                 ruff check .
-            
+
             - name: Run tests with docker compose
-              run: |
-                docker compose -f docker-compose.yml run --rm \
-                -e POSTGRES_DB=estrato_db_test \
-                -e SECRET_KEY=testsecretkey123 \
-                -e ALGORITHM=HS256 \
-                -e ACCESS_TOKEN_EXPIRE_MINUTES=15 \
-                tests
+              run: docker compose -f docker-compose.yml run --rm tests

@@ -27,7 +27,7 @@ services:
       - "8000:8000"
     depends_on:
       db:
-        condition: service_healthy 
+        condition: service_healthy
     env_file:
       - .env
     command: >
@@ -38,7 +38,7 @@ services:
     build: .
     container_name: estrato_tests
     command: pytest
-    volumes: 
+    volumes:
       - .:/app
     depends_on:
       db:
@@ -46,6 +46,11 @@ services:
     environment:
       - POSTGRES_DB=estrato_db_test
       - PYTHONPATH=/app
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
 
 volumes:
   db_data:

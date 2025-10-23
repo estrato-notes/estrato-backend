@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy.orm import Session
 
 from .repository import DashboardRepository as dashboard_repository
@@ -6,13 +8,13 @@ from .schemas import DashboardResponse, TagPopularResponse
 
 class DashboardService:
     @staticmethod
-    def get_dashboard_data(db: Session) -> DashboardResponse:
+    def get_dashboard_data(db: Session, user_id: uuid.UUID) -> DashboardResponse:
         """Orquestra a busca de todos os dados necessários para o dashboard"""
-        recent_notes = dashboard_repository.get_recent_notes(db)
-        recent_templates = dashboard_repository.get_recent_templates(db)
-        favorite_notes = dashboard_repository.get_favorite_notes(db)
-        favorite_notebooks = dashboard_repository.get_favorite_notebooks(db)
-        popular_tag_data = dashboard_repository.get_popular_tags(db)
+        recent_notes = dashboard_repository.get_recent_notes(db, user_id)
+        recent_templates = dashboard_repository.get_recent_templates(db, user_id)
+        favorite_notes = dashboard_repository.get_favorite_notes(db, user_id)
+        favorite_notebooks = dashboard_repository.get_favorite_notebooks(db, user_id)
+        popular_tag_data = dashboard_repository.get_popular_tags(db, user_id)
 
         popular_tags = []
         for tag, count in popular_tag_data:

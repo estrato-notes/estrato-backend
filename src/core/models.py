@@ -1,6 +1,16 @@
 import uuid
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Table, Text, func
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    String,
+    Table,
+    Text,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -18,7 +28,8 @@ class Notebook(Base):
     __tablename__ = "notebooks"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String(100), nullable=False, index=True, unique=True)
+    user_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    name = Column(String(100), nullable=False, index=True)
     is_favorite = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -27,11 +38,16 @@ class Notebook(Base):
         "Note", back_populates="notebook", cascade="all, delete-orphan"
     )
 
+    __table_args__ = (
+        UniqueConstraint("user_id", "name", name="uq_user_notebook_name"),
+    )
+
 
 class Note(Base):
     __tablename__ = "notes"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), nullable=False, index=True)
     title = Column(String(200), nullable=False)
     content = Column(Text, nullable=True)
     is_favorite = Column(Boolean, default=False)
@@ -48,15 +64,23 @@ class Tag(Base):
     __tablename__ = "tags"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String(20), nullable=False, unique=True, index=True)
+    user_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    name = Column(String(20), nullable=False, unique=True)
 
     notes = relationship("Note", secondary=note_tags, back_populates="tags")
+
+    __table_args__ = (UniqueConstraint("user_id", "name", name="uq_user_tag_name"),)
 
 
 class Template(Base):
     __tablename__ = "templates"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String(200), index=True, unique=True, nullable=True)
+    user_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    name = Column(String(200), index=True, unique=True)
     content = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "name", name="uq_user_template_name"),
+    )

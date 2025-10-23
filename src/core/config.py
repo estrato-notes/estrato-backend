@@ -9,6 +9,10 @@ class Settings(BaseSettings):
     POSTGRES_SERVER: str = "db"
     POSTGRES_PORT: int = 5432
 
+    SECRET_KEY: str
+    ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+
     @property
     def DATABASE_URL(self) -> str:
         user = self.POSTGRES_USER

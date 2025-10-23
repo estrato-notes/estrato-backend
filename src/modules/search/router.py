@@ -1,9 +1,11 @@
+import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from src.core.database import get_db
+from src.core.security import get_current_user_id
 
 from .schemas import SearchResponse
 from .service import SearchService as search_service
@@ -26,5 +28,6 @@ def search(
         ),
     ],
     db: Annotated[Session, Depends(get_db)],
+    user_id: Annotated[uuid.UUID, Depends(get_current_user_id)],
 ) -> SearchResponse:
-    return search_service.search(db, q)
+    return search_service.search(db, q, user_id)

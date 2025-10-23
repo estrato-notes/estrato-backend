@@ -9,9 +9,11 @@ from .schemas import NotebookCreate, NotebookUpdate
 
 class NotebookRepository:
     @staticmethod
-    def create_notebook(db: Session, notebook_data: NotebookCreate) -> Notebook:
+    def create_notebook(
+        db: Session, notebook_data: NotebookCreate, user_id: uuid.UUID
+    ) -> Notebook:
         """Cria e adiciona um notebook no DB"""
-        new_notebook = Notebook(name=notebook_data.name)
+        new_notebook = Notebook(name=notebook_data.name, user_id=user_id)
 
         db.add(new_notebook)
         db.commit()
@@ -20,19 +22,31 @@ class NotebookRepository:
         return new_notebook
 
     @staticmethod
-    def get_all_notebooks(db: Session) -> list[Notebook]:
+    def get_all_notebooks(db: Session, user_id: uuid.UUID) -> list[Notebook]:
         """Retorna uma lista com todos os notebooks"""
-        return db.query(Notebook).all()
+        return db.query(Notebook).filter(Notebook.user_id == user_id).all()
 
     @staticmethod
-    def get_notebook_by_id(db: Session, notebook_id: uuid.UUID) -> Notebook | None:
+    def get_notebook_by_id(
+        db: Session, notebook_id: uuid.UUID, user_id: uuid.UUID
+    ) -> Notebook | None:
         """Busca e retorna um notebook referente ao ID passado"""
-        return db.query(Notebook).filter(Notebook.id == notebook_id).first()
+        return (
+            db.query(Notebook)
+            .filter(Notebook.id == notebook_id, Notebook.user_id == user_id)
+            .first()
+        )
 
     @staticmethod
-    def get_notebook_by_name(db: Session, notebook_name: str) -> Notebook | None:
+    def get_notebook_by_name(
+        db: Session, notebook_name: str, user_id: uuid.UUID
+    ) -> Notebook | None:
         """Busca e retorna um notebook com o nome passado pelo parâmetro da função"""
-        return db.query(Notebook).filter(Notebook.name == notebook_name).first()
+        return (
+            db.query(Notebook)
+            .filter(Notebook.name == notebook_name, Notebook.user_id == user_id)
+            .first()
+        )
 
     @staticmethod
     def update_notebook(

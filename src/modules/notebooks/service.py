@@ -13,10 +13,14 @@ from .schemas import NotebookCreate, NotebookUpdate
 
 class NotebookService:
     @staticmethod
-    def create_notebook(db: Session, notebook_data: NotebookCreate) -> Notebook:
+    def create_notebook(
+        db: Session, notebook_data: NotebookCreate, user_id: uuid.UUID
+    ) -> Notebook:
         """Cria um novo notebook e chama o repository para salvar no DB"""
         try:
-            new_notebook = notebook_repository.create_notebook(db, notebook_data)
+            new_notebook = notebook_repository.create_notebook(
+                db, notebook_data, user_id
+            )
             return new_notebook
         except IntegrityError as err:
             db.rollback()
@@ -26,14 +30,16 @@ class NotebookService:
             ) from err
 
     @staticmethod
-    def get_all_notebooks(db: Session) -> list[Notebook]:
+    def get_all_notebooks(db: Session, user_id: uuid.UUID) -> list[Notebook]:
         """Retorna uma lista com todos os notebooks"""
-        return notebook_repository.get_all_notebooks(db)
+        return notebook_repository.get_all_notebooks(db, user_id)
 
     @staticmethod
-    def get_notebook_by_id(db: Session, notebook_id: uuid.UUID) -> Notebook:
+    def get_notebook_by_id(
+        db: Session, notebook_id: uuid.UUID, user_id: uuid.UUID
+    ) -> Notebook:
         """Busca e retorna o notebook referente ao ID passado"""
-        notebook = notebook_repository.get_notebook_by_id(db, notebook_id)
+        notebook = notebook_repository.get_notebook_by_id(db, notebook_id, user_id)
         if not notebook:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -43,10 +49,15 @@ class NotebookService:
 
     @staticmethod
     def update_notebook_data_by_id(
-        db: Session, notebook_id: uuid.UUID, notebook_update_data: NotebookUpdate
+        db: Session,
+        notebook_id: uuid.UUID,
+        notebook_update_data: NotebookUpdate,
+        user_id: uuid.UUID,
     ) -> Notebook:
         """Faz alterações nos dados de um notebook"""
-        notebook_to_update = NotebookService.get_notebook_by_id(db, notebook_id)
+        notebook_to_update = NotebookService.get_notebook_by_id(
+            db, notebook_id, user_id
+        )
 
         try:
             updated_notebook = notebook_repository.update_notebook(
@@ -61,22 +72,26 @@ class NotebookService:
             ) from err
 
     @staticmethod
-    def delete_notebook_by_id(db: Session, notebook_id: uuid.UUID):
+    def delete_notebook_by_id(db: Session, notebook_id: uuid.UUID, user_id: uuid.UUID):
         """Deleta um notebook existente"""
-        notebook_to_delete = NotebookService.get_notebook_by_id(db, notebook_id)
+        notebook_to_delete = NotebookService.get_notebook_by_id(
+            db, notebook_id, user_id
+        )
         notebook_repository.delete_notebook(db, notebook_to_delete)
 
     @staticmethod
-    def get_or_create_quick_capture_notebook(db: Session) -> Notebook:
+    def get_or_create_quick_capture_notebook(
+        db: Session, user_id: uuid.UUID
+    ) -> Notebook:
         """Busca o caderno de captura rápida e, caso não exista, cria ele"""
 
         quick_capture_notebook = notebook_repository.get_notebook_by_name(
-            db, QUICK_CAPTURE_NOTEBOOK_NAME
+            db, QUICK_CAPTURE_NOTEBOOK_NAME, user_id
         )
 
         if quick_capture_notebook:
             return quick_capture_notebook
         else:
             return notebook_repository.create_notebook(
-                db, NotebookCreate(name=QUICK_CAPTURE_NOTEBOOK_NAME)
+                db, NotebookCreate(name=QUICK_CAPTURE_NOTEBOOK_NAME), user_id
             )

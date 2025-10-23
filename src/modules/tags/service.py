@@ -12,10 +12,10 @@ from .schemas import TagCreate, TagUpdate
 
 class TagService:
     @staticmethod
-    def create_tag(db: Session, tag_data: TagCreate) -> Tag:
+    def create_tag(db: Session, tag_data: TagCreate, user_id: uuid.UUID) -> Tag:
         """Cria uma nova tag"""
         try:
-            return tag_repository.create_tag(db, tag_data)
+            return tag_repository.create_tag(db, tag_data, user_id)
         except IntegrityError as err:
             db.rollback()
             raise HTTPException(
@@ -24,14 +24,14 @@ class TagService:
             ) from err
 
     @staticmethod
-    def get_all_tags(db: Session) -> list[Tag]:
+    def get_all_tags(db: Session, user_id: uuid.UUID) -> list[Tag]:
         """Retorna uma lista com todas as tags"""
-        return tag_repository.get_all_tags(db)
+        return tag_repository.get_all_tags(db, user_id)
 
     @staticmethod
-    def get_tag_by_id(db: Session, tag_id: uuid.UUID) -> Tag:
+    def get_tag_by_id(db: Session, tag_id: uuid.UUID, user_id: uuid.UUID) -> Tag:
         """Busca e retorna uma tag referente ao ID passado no parâmetro"""
-        tag = tag_repository.get_tag_by_id(db, tag_id)
+        tag = tag_repository.get_tag_by_id(db, tag_id, user_id)
         if not tag:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="A tag não foi encontrada"
@@ -39,9 +39,11 @@ class TagService:
         return tag
 
     @staticmethod
-    def update_tag(db: Session, tag_id: uuid.UUID, tag_update_data: TagUpdate) -> Tag:
+    def update_tag(
+        db: Session, tag_id: uuid.UUID, tag_update_data: TagUpdate, user_id: uuid.UUID
+    ) -> Tag:
         """Edita as informações de uma tag"""
-        tag_to_update = TagService.get_tag_by_id(db, tag_id)
+        tag_to_update = TagService.get_tag_by_id(db, tag_id, user_id)
 
         try:
             return tag_repository.update_tag(db, tag_to_update, tag_update_data)
@@ -53,7 +55,7 @@ class TagService:
             ) from err
 
     @staticmethod
-    def delete_tag(db: Session, tag_id: uuid.UUID):
+    def delete_tag(db: Session, tag_id: uuid.UUID, user_id: uuid.UUID):
         """Deleta uma tag do Banco"""
-        tag_to_delete = TagService.get_tag_by_id(db, tag_id)
+        tag_to_delete = TagService.get_tag_by_id(db, tag_id, user_id)
         tag_repository.delete_tag(db, tag_to_delete)

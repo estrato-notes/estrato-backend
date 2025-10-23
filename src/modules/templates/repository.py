@@ -9,9 +9,11 @@ from .schemas import TemplateCreate, TemplateUpdate
 
 class TemplateRepository:
     @staticmethod
-    def create_template(db: Session, template_data: TemplateCreate) -> Template:
+    def create_template(
+        db: Session, template_data: TemplateCreate, user_id: uuid.UUID
+    ) -> Template:
         """Cria e adiciona um novo template no Banco"""
-        new_template = Template(**template_data.model_dump())
+        new_template = Template(**template_data.model_dump(), user_id=user_id)
 
         db.add(new_template)
         db.commit()
@@ -20,14 +22,20 @@ class TemplateRepository:
         return new_template
 
     @staticmethod
-    def get_all_templates(db: Session) -> list[Template]:
+    def get_all_templates(db: Session, user_id: uuid.UUID) -> list[Template]:
         """Retorna uma lista com todos os templates"""
-        return db.query(Template).all()
+        return db.query(Template).filter(Template.user_id == user_id).all()
 
     @staticmethod
-    def get_template_by_id(db: Session, template_id: uuid.UUID) -> Template | None:
+    def get_template_by_id(
+        db: Session, template_id: uuid.UUID, user_id: uuid.UUID
+    ) -> Template | None:
         """Busca e retorna um template referente ao ID passado"""
-        return db.query(Template).filter(Template.id == template_id).first()
+        return (
+            db.query(Template)
+            .filter(Template.id == template_id, Template.user_id == user_id)
+            .first()
+        )
 
     @staticmethod
     def update_template(

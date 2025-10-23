@@ -9,6 +9,8 @@ from src.core.models import Note, Notebook
 from src.modules.notes.schemas import NoteCreate, NoteUpdate, QuickNoteCreate
 from src.modules.notes.service import NoteService
 
+TEST_USER_ID = uuid.uuid4()
+
 
 @pytest.fixture
 def mock_note_repo():
@@ -24,7 +26,7 @@ def mock_notebook_service():
         "src.modules.notes.service.notebook_service", new_callable=MagicMock
     ) as mock:
         mock.get_notebook_by_id.return_value = Notebook(
-            id=uuid.uuid4(), name="Mocked Notebook"
+            id=uuid.uuid4(), name="Mocked Notebook", user_id=TEST_USER_ID
         )
         yield mock
 
@@ -35,21 +37,25 @@ class TestUnitNoteService:
     def test_create_note_success(
         self, mock_note_repo: MagicMock, mock_notebook_service: MagicMock
     ):
-        """Testa a criação de uma nota quando o caderno existe."""
         notebook_id = uuid.uuid4()
         note_data = NoteCreate(title="Nota de Teste")
         mock_db_session = MagicMock()
 
         mock_note_repo.create_note.return_value = Note(
-            id=uuid.uuid4, title=note_data.title, notebook_id=notebook_id
+            id=uuid.uuid4,
+            title=note_data.title,
+            notebook_id=notebook_id,
+            user_id=TEST_USER_ID,
         )
-        result = NoteService.create_note(mock_db_session, note_data, notebook_id)
+        result = NoteService.create_note(
+            mock_db_session, note_data, notebook_id, TEST_USER_ID
+        )
 
         mock_notebook_service.get_notebook_by_id.assert_called_once_with(
-            mock_db_session, notebook_id
+            mock_db_session, notebook_id, TEST_USER_ID
         )
         mock_note_repo.create_note.assert_called_once_with(
-            mock_db_session, note_data, notebook_id
+            mock_db_session, note_data, notebook_id, TEST_USER_ID
         )
 
         assert result.title == note_data.title
@@ -58,7 +64,6 @@ class TestUnitNoteService:
     def test_create_note_for_nonexistent_notebook_raises_404(
         self, mock_note_repo: MagicMock, mock_notebook_service: MagicMock
     ):
-        """Testa que a criação de nota falha se o notebook_service levantar 404."""
         notebook_id = uuid.uuid4()
         note_data = NoteCreate(title="Nota de Teste")
         mock_db_session = MagicMock()
@@ -68,29 +73,34 @@ class TestUnitNoteService:
         )
 
         with pytest.raises(HTTPException) as exc_info:
-            NoteService.create_note(mock_db_session, note_data, notebook_id)
+            NoteService.create_note(
+                mock_db_session, note_data, notebook_id, TEST_USER_ID
+            )
         assert exc_info.value.status_code == 404
         mock_note_repo.create_note.assert_not_called()
 
     def test_get_note_by_id_success(self, mock_note_repo: MagicMock):
-        """Testa a busca de uma nota que existe."""
         notebook_id = uuid.uuid4()
         note_id = uuid.uuid4()
         mock_db_session = MagicMock()
 
         mock_note_repo.get_note_by_id.return_value = Note(
-            id=note_id, title="Nota Encontrada", notebook_id=notebook_id
+            id=note_id,
+            title="Nota Encontrada",
+            notebook_id=notebook_id,
+            user_id=TEST_USER_ID,
         )
 
-        result = NoteService.get_note_by_id(mock_db_session, note_id, notebook_id)
+        result = NoteService.get_note_by_id(
+            mock_db_session, note_id, notebook_id, TEST_USER_ID
+        )
 
         mock_note_repo.get_note_by_id.assert_called_once_with(
-            mock_db_session, note_id, notebook_id
+            mock_db_session, note_id, notebook_id, TEST_USER_ID
         )
         assert result.id == note_id
 
     def test_get_note_by_id_not_found_raises_404(self, mock_note_repo: MagicMock):
-        """Testa que a busca de nota levanta 404 se o repositório retornar None."""
         notebook_id = uuid.uuid4()
         note_id = uuid.uuid4()
         mock_db_session = MagicMock()
@@ -98,7 +108,9 @@ class TestUnitNoteService:
         mock_note_repo.get_note_by_id.return_value = None
 
         with pytest.raises(HTTPException) as exc_info:
-            NoteService.get_note_by_id(mock_db_session, note_id, notebook_id)
+            NoteService.get_note_by_id(
+                mock_db_session, note_id, notebook_id, TEST_USER_ID
+            )
 
         assert exc_info.value.status_code == 404
         assert "A nota não foi encontrada" in exc_info.value.detail
@@ -122,7 +134,6 @@ class TestUnitNoteService:
         expected_title: str,
         expected_content: str,
     ):
-        """Testa a atualização de uma nota com diferentes dados (parametrizado)."""
         notebook_id = uuid.uuid4()
         note_id = uuid.uuid4()
         mock_db_session = MagicMock()
@@ -132,6 +143,7 @@ class TestUnitNoteService:
             title="Titulo Antigo",
             content="Conteudo Antigo",
             notebook_id=notebook_id,
+            user_id=TEST_USER_ID,
         )
 
         mock_note_repo.get_note_by_id.return_value = note_to_update
@@ -143,10 +155,10 @@ class TestUnitNoteService:
 
         mock_note_repo.update_note.side_effect = update_side_effect
         result = NoteService.update_note_data_by_id(
-            mock_db_session, note_id, notebook_id, update_data
+            mock_db_session, note_id, notebook_id, update_data, TEST_USER_ID
         )
         mock_note_repo.get_note_by_id.assert_called_once_with(
-            mock_db_session, note_id, notebook_id
+            mock_db_session, note_id, notebook_id, TEST_USER_ID
         )
         mock_note_repo.update_note.assert_called_once_with(
             mock_db_session, note_to_update, update_data
@@ -155,21 +167,25 @@ class TestUnitNoteService:
         assert result.content == expected_content
 
     def test_delete_note_by_id(self, mock_note_repo: MagicMock):
-        """Testa a deleção de uma nota."""
         notebook_id = uuid.uuid4()
         note_id = uuid.uuid4()
         mock_db_session = MagicMock()
 
         note_to_delete = Note(
-            id=note_id, title="Nota para Deletar", notebook_id=notebook_id
+            id=note_id,
+            title="Nota para Deletar",
+            notebook_id=notebook_id,
+            user_id=TEST_USER_ID,
         )
 
         mock_note_repo.get_note_by_id.return_value = note_to_delete
 
-        NoteService.delete_note_by_id(mock_db_session, note_id, notebook_id)
+        NoteService.delete_note_by_id(
+            mock_db_session, note_id, notebook_id, TEST_USER_ID
+        )
 
         mock_note_repo.get_note_by_id.assert_called_once_with(
-            mock_db_session, note_id, notebook_id
+            mock_db_session, note_id, notebook_id, TEST_USER_ID
         )
 
         mock_note_repo.delete_note.assert_called_once_with(
@@ -193,46 +209,37 @@ class TestUnitNoteService:
         content: str,
         expected_title: str,
     ):
-        """
-        Testa a lógica de criação de uma nota rápida, garantindo que o caderno
-        de captura rápida é buscado e que o título é gerado corretamente.
-        """
-        # --- Cenário ---
         mock_db_session = MagicMock()
         quick_note_data = QuickNoteCreate(content=content)
         mock_quick_capture_notebook = Notebook(
-            id=uuid.uuid4(), name=QUICK_CAPTURE_NOTEBOOK_NAME
+            id=uuid.uuid4(), name=QUICK_CAPTURE_NOTEBOOK_NAME, user_id=TEST_USER_ID
         )
 
-        # Configura os mocks
         mock_notebook_service.get_or_create_quick_capture_notebook.return_value = (
             mock_quick_capture_notebook
         )
-        # O NoteService.create_note será chamado internamente, então mockamos o retorno do repositório
         mock_note_repo.create_note.return_value = Note(
             id=uuid.uuid4(),
             title=expected_title,
             content=content,
             notebook_id=mock_quick_capture_notebook.id,
+            user_id=TEST_USER_ID,
         )
 
-        # --- Ação ---
-        result = NoteService.create_quick_note(mock_db_session, quick_note_data)
+        result = NoteService.create_quick_note(
+            mock_db_session, quick_note_data, TEST_USER_ID
+        )
 
-        # --- Verificação ---
-        # 1. Verifica se o serviço de cadernos foi chamado para obter o caderno de "Capturas Rápidas"
         mock_notebook_service.get_or_create_quick_capture_notebook.assert_called_once_with(
-            mock_db_session
+            mock_db_session, TEST_USER_ID
         )
 
-        # 2. Verifica se o repositório de notas foi chamado para criar a nota com os dados corretos
-        # (título gerado e ID do caderno de captura rápida)
         assert len(mock_note_repo.create_note.call_args_list) == 1
         call_args = mock_note_repo.create_note.call_args[0]
         assert call_args[1].title == expected_title
         assert call_args[1].content == content
         assert call_args[2] == mock_quick_capture_notebook.id
+        assert call_args[3] == TEST_USER_ID
 
-        # 3. Verifica o resultado final
         assert result.title == expected_title
         assert result.notebook_id == mock_quick_capture_notebook.id

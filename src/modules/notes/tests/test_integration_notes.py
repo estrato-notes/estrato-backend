@@ -266,17 +266,15 @@ class TestNoteRoutes:
     def test_create_quick_note_returns_201(
         self,
         client: TestClient,
-        created_notebook: dict,
         auth_headers: dict,
         content: str,
         expected_title: str,
     ):
         """Testa a criação de uma nota de captura rápida."""
-        notebook_id = created_notebook["id"]
         quick_note_payload = {"content": content}
 
         response = client.post(
-            f"/notebooks/{notebook_id}/notes/quick-capture",
+            "/notes/quick-capture",
             json=quick_note_payload,
             headers=auth_headers,
         )

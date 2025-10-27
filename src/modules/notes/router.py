@@ -19,7 +19,24 @@ from .schemas import (
 )
 from .service import NoteService as note_service
 
+base_router = APIRouter(prefix="/notes", tags=["Notes"])
+
 router = APIRouter(prefix="/notebooks/{notebook_id}/notes", tags=["Notes"])
+
+
+@base_router.post(
+    "/quick-capture",
+    response_model=NoteResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Cria uma nova nota rápida",
+)
+def create_quick_note(
+    quick_note_data: QuickNoteCreate,
+    db: Annotated[Session, Depends(get_db)],
+    user_id: Annotated[uuid.UUID, Depends(get_current_user_id)],
+):
+    """Cria uma nota de captura rápida"""
+    return note_service.create_quick_note(db, quick_note_data, user_id)
 
 
 @router.post(
@@ -175,18 +192,3 @@ def create_note_from_template(
     return note_service.create_note_from_template(
         db, template_id, notebook_id, note_data, user_id
     )
-
-
-@router.post(
-    "/quick-capture",
-    response_model=NoteResponse,
-    status_code=status.HTTP_201_CREATED,
-    summary="Cria uma nova nota rápida",
-)
-def create_quick_note(
-    quick_note_data: QuickNoteCreate,
-    db: Annotated[Session, Depends(get_db)],
-    user_id: Annotated[uuid.UUID, Depends(get_current_user_id)],
-):
-    """Cria uma nota de captura rápida"""
-    return note_service.create_quick_note(db, quick_note_data, user_id)

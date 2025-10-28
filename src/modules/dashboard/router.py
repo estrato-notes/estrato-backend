@@ -1,3 +1,5 @@
+"""Router do módulo Dashboard"""
+
 import uuid
 from typing import Annotated
 

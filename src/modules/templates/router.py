@@ -1,3 +1,5 @@
+"""Router do módulo Templates"""
+
 import uuid
 from typing import Annotated
 

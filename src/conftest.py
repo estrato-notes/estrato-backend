@@ -1,3 +1,5 @@
+"""Arquivo de configuração global dos testes com as fixtures"""
+
 import time
 import uuid
 

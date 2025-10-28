@@ -1,3 +1,5 @@
+"""Arquivo com os testes unitários do service de Notebooks"""
+
 import uuid
 from unittest.mock import MagicMock, patch
 
@@ -14,6 +16,7 @@ TEST_USER_ID = uuid.uuid4()
 
 @pytest.fixture
 def mock_notebook_repo():
+    """Retorna um mock do repository de notebooks"""
     with patch(
         "src.modules.notebooks.service.notebook_repository", new_callable=MagicMock
     ) as mock:
@@ -24,6 +27,7 @@ class TestUnitNotebookService:
     """Agrupa os testes unitários do NotebookService"""
 
     def test_create_notebook_success(self, mock_notebook_repo: MagicMock):
+        """Testa a criação bem sucedida de um notebook"""
         notebook_data = NotebookCreate(name="Caderno A")
         mock_db_session = MagicMock()
 
@@ -42,6 +46,7 @@ class TestUnitNotebookService:
         assert result.user_id == TEST_USER_ID
 
     def test_create_notebook_duplicate_raises_409(self, mock_notebook_repo: MagicMock):
+        """Testa se a criação de um notebook com um nome existente levanta uma exceção"""
         notebook_data = NotebookCreate(name="Caderno Duplicado")
         mock_db_session = MagicMock()
         mock_db_session.rollback = MagicMock()
@@ -60,6 +65,7 @@ class TestUnitNotebookService:
         mock_db_session.rollback.assert_called_once()
 
     def test_get_notebook_by_id_success(self, mock_notebook_repo: MagicMock):
+        """Testa se a busca de um notebook pelo id tem sucesso"""
         notebook_id = uuid.uuid4()
         mock_db_session = MagicMock()
         mock_notebook_repo.get_notebook_by_id.return_value = Notebook(
@@ -77,6 +83,7 @@ class TestUnitNotebookService:
     def test_get_notebook_by_id_not_found_raises_404(
         self, mock_notebook_repo: MagicMock
     ):
+        """Testa se a busca de um caderno não existente levanta 404"""
         notebook_id = uuid.uuid4()
         mock_db_session = MagicMock()
         mock_notebook_repo.get_notebook_by_id.return_value = None
@@ -103,6 +110,7 @@ class TestUnitNotebookService:
         expected_name: str,
         expected_favorite: bool,
     ):
+        """Testa a atualização dos dados de um notebook"""
         notebook_id = uuid.uuid4()
         mock_db_session = MagicMock()
         notebook_to_update = Notebook(
@@ -111,6 +119,7 @@ class TestUnitNotebookService:
         mock_notebook_repo.get_notebook_by_id.return_value = notebook_to_update
 
         def update_side_effect(db, notebook, data):
+            """Realiza o update dos dados do notebook"""
             notebook.name = data.name if data.name is not None else notebook.name
             notebook.is_favorite = (
                 data.is_favorite
@@ -127,6 +136,7 @@ class TestUnitNotebookService:
         assert result.is_favorite == expected_favorite
 
     def test_delete_notebook_by_id(self, mock_notebook_repo: MagicMock):
+        """Testa a deleção de um notebook pelo id"""
         notebook_id = uuid.uuid4()
         mock_db_session = MagicMock()
         notebook_to_delete = Notebook(

@@ -1,3 +1,5 @@
+"""Arquivo que contém a definição de todas as tabelas da aplicação"""
+
 import uuid
 
 from sqlalchemy import (
@@ -25,6 +27,8 @@ note_tags = Table(
 
 
 class Notebook(Base):
+    """Tabela para Notebooks"""
+
     __tablename__ = "notebooks"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -44,6 +48,8 @@ class Notebook(Base):
 
 
 class Note(Base):
+    """Tabela para Notes"""
+
     __tablename__ = "notes"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -61,6 +67,8 @@ class Note(Base):
 
 
 class Tag(Base):
+    """Tabela para Tags"""
+
     __tablename__ = "tags"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -73,6 +81,8 @@ class Tag(Base):
 
 
 class Template(Base):
+    """Tabela para Templates"""
+
     __tablename__ = "templates"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

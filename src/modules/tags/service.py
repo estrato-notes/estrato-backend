@@ -1,3 +1,5 @@
+"""Service do Módulo Tags"""
+
 import uuid
 
 from fastapi import HTTPException, status
@@ -11,6 +13,8 @@ from .schemas import TagCreate, TagUpdate
 
 
 class TagService:
+    """Classe do Service que conversa com o repository e retorna o resultado pro router"""
+
     @staticmethod
     def create_tag(db: Session, tag_data: TagCreate, user_id: uuid.UUID) -> Tag:
         """Cria uma nova tag"""

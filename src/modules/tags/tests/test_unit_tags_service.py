@@ -1,3 +1,5 @@
+"""Arquivo com os testes unitários do service de Tags"""
+
 import uuid
 from unittest.mock import MagicMock, patch
 
@@ -14,6 +16,7 @@ TEST_USER_ID = uuid.uuid4()
 
 @pytest.fixture
 def mock_tag_repo():
+    """Retorna o mock do repository de tags"""
     with patch(
         "src.modules.tags.service.tag_repository", new_callable=MagicMock
     ) as mock:
@@ -24,6 +27,7 @@ class TestUnitTagService:
     """Agrupa todos os testes unitários para o TagService."""
 
     def test_create_tag_success(self, mock_tag_repo: MagicMock):
+        """Testa a criação bem sucedida de uma tag"""
         tag_data = TagCreate(name="Nova Tag")
         mock_db_session = MagicMock()
 
@@ -39,6 +43,7 @@ class TestUnitTagService:
         assert result.name == tag_data.name
 
     def test_create_tag_duplicate_raises_409(self, mock_tag_repo: MagicMock):
+        """Testa que tentar criar uma tag duplicada gera HTTPException 409 e executa rollback"""
         tag_data = TagCreate(name="Tag Duplicada")
         mock_db_session = MagicMock()
         mock_db_session.rollback = MagicMock()
@@ -55,6 +60,7 @@ class TestUnitTagService:
         mock_db_session.rollback.assert_called_once()
 
     def test_get_tag_by_id_success(self, mock_tag_repo: MagicMock):
+        """Testa recuperação de uma tag por ID quando ela existe"""
         tag_id = uuid.uuid4()
         mock_db_session = MagicMock()
         mock_tag_repo.get_tag_by_id.return_value = Tag(
@@ -69,6 +75,7 @@ class TestUnitTagService:
         assert result.id == tag_id
 
     def test_get_tag_by_id_not_found_raises_404(self, mock_tag_repo: MagicMock):
+        """Testa que buscar uma tag inexistente levanta HTTPException 404"""
         tag_id = uuid.uuid4()
         mock_db_session = MagicMock()
         mock_tag_repo.get_tag_by_id.return_value = None
@@ -80,6 +87,7 @@ class TestUnitTagService:
         assert "A tag não foi encontrada" in exc_info.value.detail
 
     def test_update_tag(self, mock_tag_repo: MagicMock):
+        """Testa atualização de uma tag existente e retorno da tag atualizada"""
         tag_id = uuid.uuid4()
         update_data = TagUpdate(name="Nome Atualizado")
         mock_db_session = MagicMock()
@@ -104,6 +112,7 @@ class TestUnitTagService:
         assert result.name == "Nome Atualizado"
 
     def test_delete_tag(self, mock_tag_repo: MagicMock):
+        """Testa deleção de uma tag existente chamando o repository apropriado"""
         tag_id = uuid.uuid4()
         mock_db_session = MagicMock()
         tag_to_delete = Tag(id=tag_id, name="Para Deletar", user_id=TEST_USER_ID)

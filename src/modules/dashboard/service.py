@@ -1,3 +1,5 @@
+"""Service do Módulo Dashboard"""
+
 import uuid
 
 from sqlalchemy.orm import Session
@@ -7,6 +9,8 @@ from .schemas import DashboardResponse, TagPopularResponse
 
 
 class DashboardService:
+    """Classe do Service que conversa com o repository e retorna o resultado pro router"""
+
     @staticmethod
     def get_dashboard_data(db: Session, user_id: uuid.UUID) -> DashboardResponse:
         """Orquestra a busca de todos os dados necessários para o dashboard"""

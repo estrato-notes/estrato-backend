@@ -1,3 +1,5 @@
+"""Arquivo com os testes unitários do service de Search"""
+
 import uuid
 from unittest.mock import MagicMock, patch
 
@@ -11,6 +13,7 @@ TEST_USER_ID = uuid.uuid4()
 
 @pytest.fixture
 def mock_search_repo():
+    """Retorna um mock do repository de search"""
     with patch(
         "src.modules.search.service.search_repository",
         new_callable=MagicMock,
@@ -24,6 +27,7 @@ class TestUnitSearchService:
     def test_search_calls_repository_and_formats_response(
         self, mock_search_repo: MagicMock
     ):
+        """Testa a formatação e se a chamada do repository estão corretos"""
         mock_db_session = MagicMock()
         search_term = "teste"
 
@@ -50,6 +54,7 @@ class TestUnitSearchService:
     def test_search_with_empty_result_from_repository(
         self, mock_search_repo: MagicMock
     ):
+        """Testa se uma busca de termo inexistente retorna uma lista vazia"""
         mock_db_session = MagicMock()
         search_term = "termo_inexistente"
 

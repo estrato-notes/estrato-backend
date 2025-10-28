@@ -1,3 +1,5 @@
+"""Service do Módulo Search"""
+
 import uuid
 
 from sqlalchemy.orm import Session
@@ -7,6 +9,8 @@ from .schemas import SearchResponse, SearchResultItem
 
 
 class SearchService:
+    """Classe do Service que conversa com o repository e retorna o resultado pro router"""
+
     @staticmethod
     def search(db: Session, query_term: str, user_id: uuid.UUID) -> SearchResponse:
         """Orquestra a busca no repositório e formata o resultado"""

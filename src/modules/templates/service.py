@@ -1,3 +1,5 @@
+"""Service do Módulo Templates"""
+
 import uuid
 
 from fastapi import HTTPException, status
@@ -11,6 +13,8 @@ from .schemas import TemplateCreate, TemplateUpdate
 
 
 class TemplateService:
+    """Classe do Service que conversa com o repository e retorna o resultado pro router"""
+
     @staticmethod
     def create_template(
         db: Session, template_data: TemplateCreate, user_id: uuid.UUID

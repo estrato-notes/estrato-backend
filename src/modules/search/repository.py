@@ -1,3 +1,5 @@
+"""Repository do Módulo de Search"""
+
 import uuid
 
 from sqlalchemy import or_, select, union_all
@@ -9,6 +11,8 @@ from src.core.models import Note, Notebook, Tag, Template
 
 
 class SearchRepository:
+    """Classe do Repository de Search com os métodos que fazem as buscas no banco"""
+
     @staticmethod
     def notes_subquery(search_pattern: str, user_id: uuid.UUID) -> Select:
         """Cria a subconsulta para buscar em Notas (titulo e conteudo)"""

@@ -1,3 +1,5 @@
+"""Arquivo com os testes unitários do service de Notes"""
+
 import uuid
 from unittest.mock import MagicMock, patch
 
@@ -14,6 +16,7 @@ TEST_USER_ID = uuid.uuid4()
 
 @pytest.fixture
 def mock_note_repo():
+    """Retorna um mock do repository de notes"""
     with patch(
         "src.modules.notes.service.note_repository", new_callable=MagicMock
     ) as mock:
@@ -22,6 +25,7 @@ def mock_note_repo():
 
 @pytest.fixture
 def mock_notebook_service():
+    """Retorna um mock do service de notebooks"""
     with patch(
         "src.modules.notes.service.notebook_service", new_callable=MagicMock
     ) as mock:
@@ -37,6 +41,7 @@ class TestUnitNoteService:
     def test_create_note_success(
         self, mock_note_repo: MagicMock, mock_notebook_service: MagicMock
     ):
+        """Testa se a criação de uma nova nota tem sucesso"""
         notebook_id = uuid.uuid4()
         note_data = NoteCreate(title="Nota de Teste")
         mock_db_session = MagicMock()
@@ -64,6 +69,7 @@ class TestUnitNoteService:
     def test_create_note_for_nonexistent_notebook_raises_404(
         self, mock_note_repo: MagicMock, mock_notebook_service: MagicMock
     ):
+        """Testa se a criação de uma nota dentro de um notebook inexistente levanta uma exceção"""
         notebook_id = uuid.uuid4()
         note_data = NoteCreate(title="Nota de Teste")
         mock_db_session = MagicMock()
@@ -80,6 +86,7 @@ class TestUnitNoteService:
         mock_note_repo.create_note.assert_not_called()
 
     def test_get_note_by_id_success(self, mock_note_repo: MagicMock):
+        """Testa se a busca por uma nota pelo id tem sucesso"""
         notebook_id = uuid.uuid4()
         note_id = uuid.uuid4()
         mock_db_session = MagicMock()
@@ -101,6 +108,7 @@ class TestUnitNoteService:
         assert result.id == note_id
 
     def test_get_note_by_id_not_found_raises_404(self, mock_note_repo: MagicMock):
+        """Testa se a busca de uma nota inexistente levanta um 404"""
         notebook_id = uuid.uuid4()
         note_id = uuid.uuid4()
         mock_db_session = MagicMock()
@@ -134,6 +142,7 @@ class TestUnitNoteService:
         expected_title: str,
         expected_content: str,
     ):
+        """Faz um teste parametrizado do update de uma nota"""
         notebook_id = uuid.uuid4()
         note_id = uuid.uuid4()
         mock_db_session = MagicMock()
@@ -149,6 +158,7 @@ class TestUnitNoteService:
         mock_note_repo.get_note_by_id.return_value = note_to_update
 
         def update_side_effect(db, note, data):
+            """Realiza o update dos dados da nota"""
             note.title = data.title if data.title is not None else note.title
             note.content = data.content if data.content is not None else note.content
             return note
@@ -167,6 +177,7 @@ class TestUnitNoteService:
         assert result.content == expected_content
 
     def test_delete_note_by_id(self, mock_note_repo: MagicMock):
+        """Testa a deleção de uma nota pelo id"""
         notebook_id = uuid.uuid4()
         note_id = uuid.uuid4()
         mock_db_session = MagicMock()
@@ -197,7 +208,8 @@ class TestUnitNoteService:
         [
             ("Conteúdo curto", "Conteúdo curto"),
             (
-                "Este conteúdo é deliberadamente muito longo para testar a lógica de truncagem do título.",
+                "Este conteúdo é deliberadamente muito longo para"
+                " testar a lógica de truncagem do título.",
                 "Este conteúdo é deliberadament...",
             ),
         ],
@@ -209,6 +221,7 @@ class TestUnitNoteService:
         content: str,
         expected_title: str,
     ):
+        """Testa a criação de uma nota rápida"""
         mock_db_session = MagicMock()
         quick_note_data = QuickNoteCreate(content=content)
         mock_quick_capture_notebook = Notebook(

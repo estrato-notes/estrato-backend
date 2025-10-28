@@ -1,3 +1,5 @@
+"""Repository do Módulo de Tags"""
+
 import uuid
 
 from sqlalchemy.orm import Session
@@ -7,6 +9,8 @@ from src.modules.tags.schemas import TagCreate, TagUpdate
 
 
 class TagRepository:
+    """Classe do Repository de Tags com os métodos que conversam com o banco"""
+
     @staticmethod
     def create_tag(db: Session, tag_data: TagCreate, user_id: uuid.UUID) -> Tag:
         """Cria uma nova tag no Banco"""

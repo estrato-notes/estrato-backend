@@ -1,3 +1,5 @@
+"""Router do módulo Notebooks"""
+
 import uuid
 from typing import Annotated
 

@@ -1,3 +1,5 @@
+"""Repository do Módulo de Notes"""
+
 import uuid
 
 from sqlalchemy.orm import Session
@@ -8,6 +10,8 @@ from .schemas import NoteCreate, NoteUpdate
 
 
 class NoteRepository:
+    """Classe do Repository de Notes com os métodos que conversam com o banco"""
+
     @staticmethod
     def create_note(
         db: Session, note_data: NoteCreate, notebook_id: uuid.UUID, user_id: uuid.UUID

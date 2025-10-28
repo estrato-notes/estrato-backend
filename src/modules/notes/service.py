@@ -1,3 +1,5 @@
+"""Service do Módulo Notes"""
+
 import uuid
 
 from fastapi import HTTPException, status
@@ -14,6 +16,8 @@ from .schemas import NoteCreate, NoteFromTemplateCreate, NoteUpdate, QuickNoteCr
 
 
 class NoteService:
+    """Classe do Service que conversa com o repository e retorna o resultado pro router"""
+
     @staticmethod
     def create_note(
         db: Session, note_data: NoteCreate, notebook_id: uuid.UUID, user_id: uuid.UUID

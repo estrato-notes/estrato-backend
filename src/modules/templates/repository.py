@@ -1,3 +1,5 @@
+"""Repository do Módulo de Templates"""
+
 import uuid
 
 from sqlalchemy.orm import Session
@@ -8,6 +10,8 @@ from .schemas import TemplateCreate, TemplateUpdate
 
 
 class TemplateRepository:
+    """Classe do Repository de Templates com os métodos que conversam com o banco"""
+
     @staticmethod
     def create_template(
         db: Session, template_data: TemplateCreate, user_id: uuid.UUID

@@ -1,3 +1,5 @@
+"""Arquivo com os testes de integração dos endpoints de Search"""
+
 import pytest
 from fastapi.testclient import TestClient
 

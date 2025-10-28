@@ -1,3 +1,5 @@
+"""Arquivo com os testes unitários do service de Dashboard"""
+
 import uuid
 from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
@@ -12,6 +14,7 @@ TEST_USER_ID = uuid.uuid4()
 
 @pytest.fixture
 def mock_dashboard_repo():
+    """Retorna um mock do repository de dashboard"""
     with patch(
         "src.modules.dashboard.service.dashboard_repository",
         new_callable=MagicMock,
@@ -23,6 +26,7 @@ class TestUnitDashboardService:
     """Agrupa todos os testes unitários para o DashboardService."""
 
     def test_get_dashboard_data(self, mock_dashboard_repo: MagicMock):
+        """Testa se a captura dos dados pelo repository está correta"""
         mock_db_session = MagicMock()
         notebook_id = uuid.uuid4()
         now = datetime.now(timezone.utc)

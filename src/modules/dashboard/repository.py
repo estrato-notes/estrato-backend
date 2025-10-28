@@ -1,3 +1,5 @@
+"""Repository do Módulo do Dashboard"""
+
 import uuid
 
 from sqlalchemy import func
@@ -7,6 +9,8 @@ from src.core.models import Note, Notebook, Tag, Template, note_tags
 
 
 class DashboardRepository:
+    """Classe do Repository do Dashboard com os métodos que fazem as queries"""
+
     @staticmethod
     def get_recent_notes(db: Session, user_id: uuid.UUID, limit: int = 5) -> list[Note]:
         """Busca as 5 notas mais recentemente atualizadas no banco de dados."""

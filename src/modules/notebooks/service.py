@@ -1,3 +1,5 @@
+"""Service do Módulo Notebooks"""
+
 import uuid
 
 from fastapi import HTTPException, status
@@ -12,6 +14,8 @@ from .schemas import NotebookCreate, NotebookUpdate
 
 
 class NotebookService:
+    """Classe do Service que conversa com o repository e retorna o resultado pro router"""
+
     @staticmethod
     def create_notebook(
         db: Session, notebook_data: NotebookCreate, user_id: uuid.UUID
@@ -91,7 +95,7 @@ class NotebookService:
 
         if quick_capture_notebook:
             return quick_capture_notebook
-        else:
-            return notebook_repository.create_notebook(
-                db, NotebookCreate(name=QUICK_CAPTURE_NOTEBOOK_NAME), user_id
-            )
+
+        return notebook_repository.create_notebook(
+            db, NotebookCreate(name=QUICK_CAPTURE_NOTEBOOK_NAME), user_id
+        )

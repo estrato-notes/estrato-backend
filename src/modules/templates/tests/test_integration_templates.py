@@ -1,3 +1,5 @@
+"""Arquivo com os testes de integração dos endpoints de Templates"""
+
 from fastapi.testclient import TestClient
 
 

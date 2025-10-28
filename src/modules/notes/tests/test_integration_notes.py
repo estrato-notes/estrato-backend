@@ -1,3 +1,5 @@
+"""Arquivo com os testes de integração dos endpoints de Notes"""
+
 import uuid
 
 import pytest
@@ -258,7 +260,8 @@ class TestNoteRoutes:
         [
             ("Nota rápida com título curto.", "Nota rápida com título curto."),
             (
-                "Este é um conteúdo muito longo para uma nota de captura rápida e deve ser truncado.",
+                "Este é um conteúdo muito longo para uma"
+                " nota de captura rápida e deve ser truncado.",
                 "Este é um conteúdo muito longo...",
             ),
         ],

@@ -1,3 +1,5 @@
+"""Arquivo com os testes unitários do service de Templates"""
+
 import uuid
 from unittest.mock import MagicMock, patch
 
@@ -14,6 +16,7 @@ TEST_USER_ID = uuid.uuid4()
 
 @pytest.fixture
 def mock_template_repo():
+    """Retorna o mock do repository de templates"""
     with patch(
         "src.modules.templates.service.template_repository", new_callable=MagicMock
     ) as mock:
@@ -24,6 +27,7 @@ class TestUnitTemplateService:
     """Agrupa todos os testes unitários para o TemplateService."""
 
     def test_create_template_success(self, mock_template_repo: MagicMock):
+        """Testa a criação bem sucedida de um template"""
         template_data = TemplateCreate(name="Novo Template")
         mock_db_session = MagicMock()
 
@@ -41,6 +45,7 @@ class TestUnitTemplateService:
         assert result.name == template_data.name
 
     def test_create_template_duplicate_raises_409(self, mock_template_repo: MagicMock):
+        """Testa que tentar criar um template duplicado lança 409 e executa rollback"""
         template_data = TemplateCreate(name="Template Duplicado")
         mock_db_session = MagicMock()
         mock_db_session.rollback = MagicMock()
@@ -61,6 +66,7 @@ class TestUnitTemplateService:
     def test_get_template_by_id_not_found_raises_404(
         self, mock_template_repo: MagicMock
     ):
+        """Testa que buscar um template inexistente levanta HTTPException 404"""
         template_id = uuid.uuid4()
         mock_db_session = MagicMock()
         mock_template_repo.get_template_by_id.return_value = None
@@ -73,6 +79,7 @@ class TestUnitTemplateService:
         assert exc_info.value.status_code == 404
 
     def test_delete_template(self, mock_template_repo: MagicMock):
+        """Testa deleção de um template existente chamando o repository apropriado"""
         template_id = uuid.uuid4()
         mock_db_session = MagicMock()
         template_to_delete = Template(

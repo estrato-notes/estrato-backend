@@ -1,3 +1,5 @@
+"""Schemas para o módulo dashboard"""
+
 from pydantic import BaseModel, ConfigDict
 
 from src.modules.notebooks.schemas import NotebookResponse
@@ -7,12 +9,16 @@ from src.modules.templates.schemas import TemplateResponse
 
 
 class TagPopularResponse(TagResponse):
+    """Schemas com a contagem de notas baseada em uma tag"""
+
     note_count: int
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class DashboardResponse(BaseModel):
+    """Schema de retorno padrão com os dados do dashboard"""
+
     recent_notes: list[NoteResponse]
     popular_tags: list[TagPopularResponse]
     favorite_notes: list[NoteResponse]

@@ -1,3 +1,5 @@
+"""Router do módulo Search"""
+
 import uuid
 from typing import Annotated
 
@@ -30,4 +32,6 @@ def search(
     db: Annotated[Session, Depends(get_db)],
     user_id: Annotated[uuid.UUID, Depends(get_current_user_id)],
 ) -> SearchResponse:
+    """Realiza a busca baseada na query passada por parâmetro"""
+
     return search_service.search(db, q, user_id)

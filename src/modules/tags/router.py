@@ -1,3 +1,5 @@
+"""Router do módulo Tags"""
+
 import uuid
 from typing import Annotated
 

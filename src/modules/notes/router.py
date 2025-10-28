@@ -1,3 +1,5 @@
+"""Router do módulo Notes"""
+
 import uuid
 from typing import Annotated
 

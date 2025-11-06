@@ -1,6 +1,9 @@
 """Arquivo Main da aplicação Estrato"""
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from .core.config import settings
 
 # Routers
 from .modules.dashboard.router import router as dashboard_router
@@ -12,6 +15,16 @@ from .modules.tags.router import router as tag_router
 from .modules.templates.router import router as template_router
 
 app = FastAPI(title="Estrato API")
+
+origins = [settings.CLIENT_ORIGIN_URL]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(notebook_router)
 app.include_router(note_router)

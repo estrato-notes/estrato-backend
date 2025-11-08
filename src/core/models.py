@@ -21,8 +21,18 @@ from .database import Base
 note_tags = Table(
     "note_tags",
     Base.metadata,
-    Column("note_id", UUID(as_uuid=True), ForeignKey("notes.id"), primary_key=True),
-    Column("tag_id", UUID(as_uuid=True), ForeignKey("tags.id"), primary_key=True),
+    Column(
+        "note_id",
+        UUID(as_uuid=True),
+        ForeignKey("notes.id", ondelete="CASCADE", name="fk_notetag_note_id"),
+        primary_key=True,
+    ),
+    Column(
+        "tag_id",
+        UUID(as_uuid=True),
+        ForeignKey("tags.id", ondelete="CASCADE", name="fk_notetag_tag_id"),
+        primary_key=True,
+    ),
 )
 
 
@@ -60,7 +70,11 @@ class Note(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    notebook_id = Column(UUID(as_uuid=True), ForeignKey("notebooks.id"), nullable=False)
+    notebook_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("notebooks.id", ondelete="CASCADE", name="fk_note_notebook_id"),
+        nullable=False,
+    )
     notebook = relationship("Notebook", back_populates="notes")
 
     tags = relationship("Tag", secondary=note_tags, back_populates="notes")
@@ -73,7 +87,7 @@ class Tag(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), nullable=False, index=True)
-    name = Column(String(20), nullable=False, unique=True)
+    name = Column(String(20), nullable=False)
 
     notes = relationship("Note", secondary=note_tags, back_populates="tags")
 
@@ -87,7 +101,7 @@ class Template(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), nullable=False, index=True)
-    name = Column(String(200), index=True, unique=True)
+    name = Column(String(200), index=True)
     content = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

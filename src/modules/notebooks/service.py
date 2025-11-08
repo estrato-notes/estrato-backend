@@ -81,6 +81,13 @@ class NotebookService:
         notebook_to_delete = NotebookService.get_notebook_by_id(
             db, notebook_id, user_id
         )
+
+        if notebook_to_delete.name == QUICK_CAPTURE_NOTEBOOK_NAME:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="O caderno 'Capturas Rápidas' não pode ser excluído",
+            )
+
         notebook_repository.delete_notebook(db, notebook_to_delete)
 
     @staticmethod

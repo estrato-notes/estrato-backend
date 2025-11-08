@@ -13,6 +13,7 @@ from .modules.notes.router import router as note_router
 from .modules.search.router import router as search_router
 from .modules.tags.router import router as tag_router
 from .modules.templates.router import router as template_router
+from .modules.users.router import router as user_router
 
 app = FastAPI(title="Estrato API")
 
@@ -33,3 +34,4 @@ app.include_router(tag_router)
 app.include_router(template_router)
 app.include_router(dashboard_router)
 app.include_router(search_router)
+app.include_router(user_router)

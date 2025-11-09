@@ -153,3 +153,8 @@ class NoteService:
         return NoteService.create_note(
             db, NoteCreate(title=title, content=content), standard_notebook.id, user_id
         )
+    
+    @staticmethod
+    def get_all_notes(db: Session, user_id: uuid.UUID) -> list[Note]:
+        """Retorna todas as notas de um usuário"""
+        return note_repository.get_all_notes(db, user_id)

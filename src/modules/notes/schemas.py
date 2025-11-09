@@ -6,6 +6,8 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from src.modules.tags.schemas import TagResponse
+
 
 class NoteCreate(BaseModel):
     """Schema para a criação de uma nota"""
@@ -60,5 +62,6 @@ class NoteResponse(BaseModel):
     notebook_id: uuid.UUID
     created_at: datetime
     updated_at: datetime | None
+    tags: list[TagResponse] = []
 
     model_config = ConfigDict(from_attributes=True)

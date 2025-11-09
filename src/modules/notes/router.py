@@ -40,6 +40,19 @@ def create_quick_note(
     """Cria uma nota de captura rápida"""
     return note_service.create_quick_note(db, quick_note_data, user_id)
 
+@base_router.get(
+    "/",
+    response_model=list[NoteResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Lista todas as notas do usuário",
+)
+def get_all_notes(
+    db: Annotated[Session, Depends(get_db)],
+    user_id: Annotated[uuid.UUID, Depends(get_current_user_id)],
+) -> list[Note]:
+    """Retorna uma lista com todas as notas do usuário"""
+    return note_service.get_all_notes(db, user_id)
+
 
 @router.post(
     "/",

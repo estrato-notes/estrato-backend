@@ -85,7 +85,7 @@ class NoteRepository:
         if tag in note.tags:
             note.tags.remove(tag)
             db.commit()
-    
+
     @staticmethod
     def get_all_notes(db: Session, user_id: uuid.UUID) -> list[Note]:
         """Retorna todas as Notas de um usuário"""
